@@ -76,7 +76,7 @@
 <body>
   <model-viewer
     id="glb"
-    src="carre.glb"
+    src="background.glb"
     alt="Modèle 3D background"
     camera-controls
     auto-rotate
@@ -87,7 +87,7 @@
 
   <div class="video-modal" id="videoModal">
     <button class="close-btn" id="closeVideo" aria-label="Fermer la vidéo">&times;</button>
-    <video id="welcomeVideo" src="sesame.mp4" controls autoplay muted></video>
+    <video id="welcomeVideo" src="bienvenue.mp4" controls muted></video>
   </div>
 
   <script>
@@ -99,7 +99,11 @@
     glb.addEventListener('click', () => {
       modal.classList.add('active');
       video.currentTime = 0;
-      // Pas besoin d'appeler video.play() car autoplay+muted suffit pour la plupart des navigateurs
+      video.muted = true; // Assure le muted (pour autoplay sûr)
+      video.play().catch((e) => {
+        // Si la lecture échoue (rare après clic), focus sur le bouton play
+        console.warn('Lecture refusée:', e);
+      });
     });
 
     closeBtn.addEventListener('click', () => {
@@ -107,7 +111,7 @@
       video.pause();
     });
 
-    // Optionnel : fermer la vidéo avec ESC
+    // Fermer la modale avec Echap
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && modal.classList.contains('active')) {
         modal.classList.remove('active');
