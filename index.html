@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Bienvenue</title>
+  <title>Test Vidéo</title>
   <style>
     html, body { margin: 0; height: 100%; overflow: hidden; background: black; }
     #videoContainer {
@@ -28,9 +28,9 @@
 
   <script type="module">
     import * as THREE from 'https://cdn.skypack.dev/three';
-    import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader.js';
 
     const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x202020);
     const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setSize(innerWidth, innerHeight);
@@ -39,31 +39,35 @@
     const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
     scene.add(light);
 
-    const loader = new GLTFLoader();
-    let model;
-    loader.load('background.glb', gltf => {
-      model = gltf.scene;
-      scene.add(model);
-      animate();
-    });
+    // ✅ Cube cliquable
+    const cube = new THREE.Mesh(
+      new THREE.BoxGeometry(),
+      new THREE.MeshStandardMaterial({ color: 0x00ffcc })
+    );
+    scene.add(cube);
 
     camera.position.z = 2;
 
-    function animate() {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    }
-
-    // Raycasting pour détecter le clic sur le modèle
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
+    // 👇 Animation
+    function animate() {
+      requestAnimationFrame(animate);
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // 👇 Clic sur le cube → vidéo au centre
     window.addEventListener('click', e => {
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
 
       raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObject(model, true);
+      const intersects = raycaster.intersectObject(cube);
 
       if (intersects.length > 0) {
         const container = document.getElementById('videoContainer');
