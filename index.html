@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affichage Fullpage du background.glb</title>
+    <!-- Chargement de model-viewer pour afficher le modèle GLB -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer@latest"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        body {
+            width: 100vw;
+            height: 100vh;
+        }
+        model-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            min-width: 100vw;
+            min-height: 100vh;
+            z-index: 1;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Affichage du modèle GLB en plein écran -->
+    <model-viewer
+        src="background.glb"
+        alt="Modèle 3D background"
+        camera-controls
+        auto-rotate
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        shadow-intensity="1"
+        xr-environment
+        vr-mode-ui="enabled"
+        exposure="1"
+        style="background: #000;">
+    </model-viewer>
+</body>
+</html>
