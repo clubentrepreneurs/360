@@ -46,6 +46,7 @@
       border-radius: 14px;
       background: #000;
       outline: none;
+      object-fit: contain;
     }
     .close-btn {
       position: absolute;
@@ -86,7 +87,7 @@
 
   <div class="video-modal" id="videoModal">
     <button class="close-btn" id="closeVideo" aria-label="Fermer la vidéo">&times;</button>
-    <video id="welcomeVideo" src="sesame.mp4" controls autoplay></video>
+    <video id="welcomeVideo" src="sesame.mp4" controls autoplay muted></video>
   </div>
 
   <script>
@@ -98,7 +99,7 @@
     glb.addEventListener('click', () => {
       modal.classList.add('active');
       video.currentTime = 0;
-      video.play();
+      // Pas besoin d'appeler video.play() car autoplay+muted suffit pour la plupart des navigateurs
     });
 
     closeBtn.addEventListener('click', () => {
