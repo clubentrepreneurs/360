@@ -1,80 +1,54 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Test Vidéo</title>
+  <meta charset="UTF-8">
+  <title>Affichage GLB</title>
   <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; background: black; }
-    #videoContainer {
-      position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 50vw;
-      display: none;
-      z-index: 10;
-    }
-    video {
-      width: 100%;
-      border: 4px solid white;
-      box-shadow: 0 0 20px black;
-    }
+    html, body { margin: 0; height: 100%; overflow: hidden; }
     canvas { display: block; }
   </style>
 </head>
 <body>
-  <div id="videoContainer">
-    <video id="video" src="bienvenue.mp4" muted playsinline></video>
-  </div>
-
   <script type="module">
     import * as THREE from 'https://cdn.skypack.dev/three';
+    import { GLTFLoader } from 'https://cdn.skypack.dev/three/examples/jsm/loaders/GLTFLoader.js';
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x202020);
-    const camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
+    scene.background = new THREE.Color(0xdddddd);
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.setSize(innerWidth, innerHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
     const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
     scene.add(light);
 
-    // ✅ Cube cliquable
-    const cube = new THREE.Mesh(
-      new THREE.BoxGeometry(),
-      new THREE.MeshStandardMaterial({ color: 0x00ffcc })
+    const loader = new GLTFLoader();
+    loader.load(
+      'background.glb',
+      gltf => {
+        const model = gltf.scene;
+        scene.add(model);
+        animate();
+      },
+      undefined,
+      error => {
+        console.error('Erreur chargement GLB:', error);
+      }
     );
-    scene.add(cube);
 
     camera.position.z = 2;
 
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-
-    // 👇 Animation
     function animate() {
       requestAnimationFrame(animate);
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
       renderer.render(scene, camera);
     }
 
-    animate();
-
-    // 👇 Clic sur le cube → vidéo au centre
-    window.addEventListener('click', e => {
-      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = - (e.clientY / window.innerHeight) * 2 + 1;
-
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObject(cube);
-
-      if (intersects.length > 0) {
-        const container = document.getElementById('videoContainer');
-        const video = document.getElementById('video');
-        container.style.display = 'block';
-        video.play();
-      }
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
 </body>
