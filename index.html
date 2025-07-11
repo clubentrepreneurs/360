@@ -4,23 +4,45 @@
     <meta charset="UTF-8" />
     <title>Bienvenue</title>
     <style>
-      body { 
-        margin: 0; 
-        display: flex; 
-        justify-content: center; 
-        align-items: center; 
-        height: 100vh; 
-        background: #222; 
+      body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #222;
       }
-      video {
-        max-width: 90vw;
-        max-height: 90vh;
-        border-radius: 10px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      #videoBtn {
+        padding: 1em 2em;
+        font-size: 1.3em;
+        border: none;
+        border-radius: 8px;
+        background: #e53935;
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        transition: background 0.2s;
+      }
+      #videoBtn:hover {
+        background: #b71c1c;
       }
     </style>
   </head>
   <body>
-    <video src="bienvenue.mp4" controls autoplay></video>sfsfsjfsjfgsgfsjgfsjhf
+    <button id="videoBtn">Vidéo</button>
+    <script>
+      document.getElementById('videoBtn').addEventListener('click', function() {
+        // Ouvre une popup prenant la moitié de la largeur et hauteur de l'écran
+        const width = window.innerWidth / 2;
+        const height = window.innerHeight / 2;
+        const left = window.innerWidth / 4;
+        const top = window.innerHeight / 4;
+        window.open(
+          "https://www.youtube.com/watch?v=lUU1G-6klpI&list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&index=1",
+          "_blank",
+          `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+        );
+      });
+    </script>
   </body>
 </html>
