@@ -18,7 +18,7 @@
   <script>
     const canvas = document.getElementById("renderCanvas");
     const engine = new BABYLON.Engine(canvas, true);
-    engine.loadingScreen = new BABYLON.DefaultLoadingScreen(canvas, "", "");
+
 
 
     const createScene = function () {
@@ -33,6 +33,12 @@
       light.intensity = 0.9;
 
       // Chargement du modèle .glb
+      const engine = new BABYLON.Engine(canvas, true);
+engine.loadingScreen = {
+  displayLoadingUI: function () {},
+  hideLoadingUI: function () {}
+};
+
       BABYLON.SceneLoader.Append("", "background.glb", scene, function (scene) {
         console.log("Modèle chargé !");
       }, null, function (scene, message) {
