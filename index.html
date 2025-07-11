@@ -18,6 +18,8 @@
   <script>
     const canvas = document.getElementById("renderCanvas");
     const engine = new BABYLON.Engine(canvas, true);
+    engine.loadingScreen = new BABYLON.DefaultLoadingScreen(canvas, "", "");
+
 
     const createScene = function () {
       const scene = new BABYLON.Scene(engine);
