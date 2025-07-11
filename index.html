@@ -52,6 +52,7 @@
 
       const engine = new BABYLON.Engine(canvas, true);
 
+      // Supprimer l'écran de chargement Babylon
       engine.loadingScreen = {
         displayLoadingUI: function () {},
         hideLoadingUI: function () {}
@@ -64,22 +65,25 @@
       const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
       light.intensity = 0.9;
 
-      let glbModel;
+      // Variable pour stocker le modèle une fois chargé
+      let glbModel = null;
 
+      // Chargement du modèle GLB
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
-        glbModel = scene.meshes[scene.meshes.length - 1];
+        glbModel = scene.meshes[scene.meshes.length - 1]; // Dernier mesh ajouté
         console.log("Modèle chargé !");
       }, null, function (_, message) {
-        console.error("Erreur :", message);
+        console.error("Erreur de chargement :", message);
       });
 
+      // Clic sur le modèle : afficher la vidéo
       canvas.addEventListener("pointerdown", function (evt) {
         const pickResult = scene.pick(evt.clientX, evt.clientY);
-        if (pickResult.hit && glbModel && pickResult.pickedMesh && glbModel.getChildMeshes().includes(pickResult.pickedMesh)) {
-          canvas.style.display = "none";               // 🧼 cacher le canvas
-          videoContainer.style.display = "block";      // 🎥 afficher la vidéo
+        if (pickResult.hit && glbModel) {
+          canvas.style.display = "none";               // Cacher la scène
+          videoContainer.style.display = "block";      // Montrer la vidéo
           videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
-          engine.stopRenderLoop();                     // 🛑 arrêter le rendu Babylon
+          engine.stopRenderLoop();                     // Arrêter Babylon
         }
       });
 
