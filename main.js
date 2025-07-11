@@ -1,7 +1,7 @@
 // Assure-toi que three.module.js est bien disponible à la racine ou indique le bon chemin !
-import * as THREE from '/three.module.js';
-import { GLTFLoader } from '/GLTFLoader.js';
-import { OrbitControls } from '/OrbitControls.js';
+import * as THREE from 'three.module.js';
+import { GLTFLoader } from 'GLTFLoader.js';
+import { OrbitControls } from 'OrbitControls.js';
 
 const canvas = document.getElementById('scene');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
