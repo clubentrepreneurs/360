@@ -78,7 +78,7 @@
       scene.add(light);
 
       // Élément central
-      loader.load("central.glb", (gltf) => {
+      loader.load("background.glb", (gltf) => {
         gltf.scene.position.set(0, 0, 0);
         scene.add(gltf.scene);
       });
