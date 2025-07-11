@@ -28,6 +28,10 @@
       transform: translate(-50%, -50%);
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
       background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     #videoContainer iframe {
@@ -35,19 +39,33 @@
       height: 100%;
       border: none;
     }
+
+    #backButton {
+      margin-top: 10px;
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 6px;
+    }
+
+    #backButton:hover {
+      background: #ddd;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Canvas Babylon -->
   <canvas id="renderCanvas"></canvas>
 
-  <!-- Conteneur vidéo -->
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay"></iframe>
+    <button id="backButton">Retour à la scène 3D</button>
   </div>
 
-  <!-- Babylon.js & GLTF Loader -->
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
@@ -56,6 +74,7 @@
       const canvas = document.getElementById("renderCanvas");
       const videoContainer = document.getElementById("videoContainer");
       const videoFrame = document.getElementById("videoFrame");
+      const backButton = document.getElementById("backButton");
 
       const engine = new BABYLON.Engine(canvas, true);
 
@@ -84,18 +103,27 @@
         const pickResult = scene.pick(evt.clientX, evt.clientY);
         if (pickResult.hit && glbModel) {
           canvas.style.display = "none";
-          videoContainer.style.display = "block";
+          videoContainer.style.display = "flex";
           videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
           engine.stopRenderLoop();
         }
       });
 
-      engine.runRenderLoop(() => {
-        scene.render();
+      backButton.addEventListener("click", function () {
+        videoFrame.src = ""; // ⚠️ Stop the video
+        videoContainer.style.display = "none";
+        canvas.style.display = "block";
+        engine.runRenderLoop(() => {
+          scene.render();
+        });
       });
 
       window.addEventListener("resize", () => {
         engine.resize();
+      });
+
+      engine.runRenderLoop(() => {
+        scene.render();
       });
     });
   </script>
