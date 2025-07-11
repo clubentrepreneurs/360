@@ -35,7 +35,11 @@ for (let i = 0; i < 7; i++) {
   });
 }
 
-const light = new THREE.AmbientLight(0xffffff, 2);
+const ambient = new THREE.AmbientLight(0xffffff, 1.5);
+const directional = new THREE.DirectionalLight(0xffffff, 2);
+directional.position.set(1, 1, 1);
+scene.add(ambient, directional);
+
 scene.add(light);
 
 const raycaster = new THREE.Raycaster();
