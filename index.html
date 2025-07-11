@@ -19,7 +19,7 @@
     }
 
     #videoContainer {
-      display: none; /* ✅ Masqué au démarrage */
+      display: none;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -68,6 +68,7 @@
 
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
+  <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
 
   <script>
     window.addEventListener("DOMContentLoaded", function () {
@@ -91,47 +92,47 @@
 
       let glbModel = null;
 
+      // Charger background.glb
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
+        console.log("Modèle background chargé");
       });
 
-      
-// 1. Interface GUI
-const guiTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-// 2. Texte à afficher
-const label = new BABYLON.GUI.TextBlock();
-label.text = "background";
-label.color = "white";
-label.fontSize = 24;
-label.isVisible = false;
-guiTexture.addControl(label);
-
-// 3. Positionner le texte au-dessus du modèle
-scene.registerBeforeRender(() => {
-  if (glbModel) {
-    const pos = glbModel.getBoundingInfo().boundingBox.centerWorld;
-    const projected = BABYLON.Vector3.Project(
-      pos,
-      BABYLON.Matrix.Identity(),
-      scene.getTransformMatrix(),
-      camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
-    );
-
-    // Vérifier si le modèle est dans le champ de vision
-    const isVisible = glbModel.isInFrustum(camera);
-
-    label.left = projected.x + "px";
-    label.top = projected.y - 30 + "px";
-    label.isVisible = isVisible;
-  }
-});
-
-
+      // Charger icone7.glb
       BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
-  console.log("Icône 7 chargée !");
-});
+        console.log("Modèle icone7 chargé");
+      });
 
+      // Interface GUI
+      const guiTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+      const label = new BABYLON.GUI.TextBlock();
+      label.text = "background";
+      label.color = "white";
+      label.fontSize = 24;
+      label.isVisible = false;
+      guiTexture.addControl(label);
+
+      // Suivre visibilité du modèle
+      scene.registerBeforeRender(() => {
+        if (glbModel) {
+          const isVisible = glbModel.isInFrustum(camera);
+          label.isVisible = isVisible;
+
+          if (isVisible) {
+            const pos = glbModel.getBoundingInfo().boundingBox.centerWorld;
+            const projected = BABYLON.Vector3.Project(
+              pos,
+              BABYLON.Matrix.Identity(),
+              scene.getTransformMatrix(),
+              camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+            );
+            label.left = projected.x + "px";
+            label.top = projected.y - 30 + "px";
+          }
+        }
+      });
+
+      // Clic sur le modèle
       canvas.addEventListener("pointerdown", function (evt) {
         const pickResult = scene.pick(evt.clientX, evt.clientY);
         if (pickResult.hit && glbModel) {
@@ -142,6 +143,7 @@ scene.registerBeforeRender(() => {
         }
       });
 
+      // Bouton retour
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
         videoContainer.style.display = "none";
@@ -150,7 +152,6 @@ scene.registerBeforeRender(() => {
       });
 
       window.addEventListener("resize", () => engine.resize());
-
       engine.runRenderLoop(() => scene.render());
     });
   </script>
