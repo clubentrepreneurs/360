@@ -30,6 +30,15 @@
       const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
       light.intensity = 0.9;
 
+
+
+
+      const engine = new BABYLON.Engine(canvas, true);
+engine.loadingScreen = {
+  displayLoadingUI: function () {},
+  hideLoadingUI: function () {}
+};
+
       // Chargement du modèle .glb
       BABYLON.SceneLoader.Append("", "background.glb", scene, function (scene) {
         console.log("Modèle chargé !");
