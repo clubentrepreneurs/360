@@ -1,27 +1,42 @@
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 3;
+import * as THREE from './three.module.js';
+import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from './jsm/controls/OrbitControls.js';
 
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('scene'), antialias: true });
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
 
-// Lumière simple
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(2, 2, 2);
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.set(0, 0, 5);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+const light = new THREE.AmbientLight(0xffffff, 1);
 scene.add(light);
 
-// Chargement du modèle GLB
-const loader = new THREE.GLTFLoader();
-loader.load("background.glb", function (gltf) {
-    scene.add(gltf.scene);
-}, undefined, function (error) {
-    console.error("Erreur de chargement du GLB :", error);
+const loader = new GLTFLoader();
+loader.load('background.glb', (gltf) => {
+  gltf.scene.position.set(0, 0, 0);
+  scene.add(gltf.scene);
+  animate();
 });
 
 function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
 }
 
-animate();
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
