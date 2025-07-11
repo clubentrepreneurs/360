@@ -2,24 +2,41 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Babylon.js - Réussite Étudiante</title>
+  <title>Modèle GLB - Babylon.js</title>
   <style>
-    html, body { margin: 0; padding: 0; overflow: hidden; height: 100%; }
-    canvas { width: 100%; height: 100%; display: block; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
   </style>
 </head>
 <body>
   <canvas id="renderCanvas"></canvas>
 
-  <!-- Babylon.js et le loader glTF -->
+  <!-- Babylon.js & GLTF Loader -->
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
   <script>
-    const canvas = document.getElementById("renderCanvas");
-    const engine = new BABYLON.Engine(canvas, true);
+    window.addEventListener("DOMContentLoaded", function () {
+      const canvas = document.getElementById("renderCanvas");
+      const engine = new BABYLON.Engine(canvas, true);
 
-    const createScene = function () {
+      // Supprimer le logo Babylon et le texte de chargement
+      engine.loadingScreen = {
+        displayLoadingUI: function () {}, // ne rien afficher
+        hideLoadingUI: function () {}     // ne rien cacher
+      };
+
+      // Création de la scène
       const scene = new BABYLON.Scene(engine);
 
       // Caméra orbitale
@@ -28,32 +45,24 @@
 
       // Lumière
       const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-      light.intensity = 0.9;
-
-
-
-
-      const engine = new BABYLON.Engine(canvas, true);
-engine.loadingScreen = {
-  displayLoadingUI: function () {},
-  hideLoadingUI: function () {}
-};
+      light.intensity = 0.8;
 
       // Chargement du modèle .glb
-      BABYLON.SceneLoader.Append("", "background.glb", scene, function (scene) {
-        console.log("Modèle chargé !");
-      }, null, function (scene, message) {
-        console.error("Erreur de chargement :", message);
+      BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
+        console.log("Modèle chargé avec succès !");
+      }, null, function (_, message) {
+        console.error("Erreur de chargement du modèle :", message);
       });
 
-      return scene;
-    };
+      // Boucle de rendu
+      engine.runRenderLoop(() => {
+        scene.render();
+      });
 
-    const scene = createScene();
-    engine.runRenderLoop(() => scene.render());
-
-    window.addEventListener("resize", function () {
-      engine.resize();
+      // Redimensionnement dynamique
+      window.addEventListener("resize", () => {
+        engine.resize();
+      });
     });
   </script>
 </body>
