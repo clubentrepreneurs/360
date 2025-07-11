@@ -18,7 +18,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 const loader = new THREE.GLTFLoader();
 let clickableIcons = [];
 
-loader.load("assets/central.glb", (gltf) => {
+loader.load("assets/background.glb", (gltf) => {
   scene.add(gltf.scene);
 });
 
