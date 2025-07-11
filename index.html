@@ -95,6 +95,38 @@
         glbModel = scene.meshes[scene.meshes.length - 1];
       });
 
+      
+// 1. Interface GUI
+const guiTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+// 2. Texte à afficher
+const label = new BABYLON.GUI.TextBlock();
+label.text = "background";
+label.color = "white";
+label.fontSize = 24;
+label.isVisible = false;
+guiTexture.addControl(label);
+
+// 3. Positionner le texte au-dessus du modèle
+scene.registerBeforeRender(() => {
+  if (glbModel) {
+    const pos = glbModel.getBoundingInfo().boundingBox.centerWorld;
+    const projected = BABYLON.Vector3.Project(
+      pos,
+      BABYLON.Matrix.Identity(),
+      scene.getTransformMatrix(),
+      camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+    );
+
+    // Vérifier si le modèle est dans le champ de vision
+    const isVisible = glbModel.isInFrustum(camera);
+
+    label.left = projected.x + "px";
+    label.top = projected.y - 30 + "px";
+    label.isVisible = isVisible;
+  }
+});
+
 
       BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
   console.log("Icône 7 chargée !");
