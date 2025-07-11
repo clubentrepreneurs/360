@@ -1,5 +1,5 @@
 // Assure-toi que three.module.js est bien disponible à la racine ou indique le bon chemin !
-import * as THREE from './three.module.js';
+import * as THREE from 'three';
 import { GLTFLoader } from './GLTFLoader.js';
 import { OrbitControls } from './OrbitControls.js';
 
