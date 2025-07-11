@@ -8,44 +8,35 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      display: flex;
       overflow: hidden;
-      font-family: sans-serif;
     }
 
-    #leftPane {
-      width: 100%;
-      position: relative;
-      transition: width 0.3s;
-    }
-
-    #rightPane {
-      width: 0;
-      transition: width 0.3s;
-      overflow: hidden;
-      background: #000;
-    }
-
-    #rightPane iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    canvas {
+    #renderCanvas {
       width: 100%;
       height: 100%;
       display: block;
+    }
+
+    #videoContainer {
+      display: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    #videoContainer iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
   </style>
 </head>
 <body>
 
-  <div id="leftPane">
-    <canvas id="renderCanvas"></canvas>
-  </div>
+  <!-- Canvas Babylon -->
+  <canvas id="renderCanvas"></canvas>
 
-  <div id="rightPane">
+  <!-- Conteneur vidéo -->
+  <div id="videoContainer">
     <iframe id="videoFrame"></iframe>
   </div>
 
@@ -56,13 +47,11 @@
   <script>
     window.addEventListener("DOMContentLoaded", function () {
       const canvas = document.getElementById("renderCanvas");
-      const leftPane = document.getElementById("leftPane");
-      const rightPane = document.getElementById("rightPane");
+      const videoContainer = document.getElementById("videoContainer");
       const videoFrame = document.getElementById("videoFrame");
 
       const engine = new BABYLON.Engine(canvas, true);
 
-      // Supprimer l'écran de chargement Babylon
       engine.loadingScreen = {
         displayLoadingUI: function () {},
         hideLoadingUI: function () {}
@@ -77,7 +66,6 @@
 
       let glbModel;
 
-      // Chargement du modèle .glb
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
         console.log("Modèle chargé !");
@@ -85,24 +73,20 @@
         console.error("Erreur :", message);
       });
 
-      // Détection du clic sur le modèle
       canvas.addEventListener("pointerdown", function (evt) {
         const pickResult = scene.pick(evt.clientX, evt.clientY);
         if (pickResult.hit && glbModel && pickResult.pickedMesh && glbModel.getChildMeshes().includes(pickResult.pickedMesh)) {
-          // Ouvrir la vidéo dans le panneau droit
-          leftPane.style.width = "50%";
-          rightPane.style.width = "50%";
+          canvas.style.display = "none";               // 🧼 cacher le canvas
+          videoContainer.style.display = "block";      // 🎥 afficher la vidéo
           videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
-          engine.resize();
+          engine.stopRenderLoop();                     // 🛑 arrêter le rendu Babylon
         }
       });
 
-      // Boucle de rendu
       engine.runRenderLoop(() => {
         scene.render();
       });
 
-      // Resize navigateur
       window.addEventListener("resize", () => {
         engine.resize();
       });
