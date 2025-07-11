@@ -14,14 +14,15 @@
     }
 
     #leftPane {
-      flex: 1;
+      width: 100%;
       position: relative;
-      background: #eee;
+      transition: width 0.3s;
     }
 
     #rightPane {
-      flex: 1;
-      display: none;
+      width: 0;
+      transition: width 0.3s;
+      overflow: hidden;
       background: #000;
     }
 
@@ -55,8 +56,13 @@
   <script>
     window.addEventListener("DOMContentLoaded", function () {
       const canvas = document.getElementById("renderCanvas");
+      const leftPane = document.getElementById("leftPane");
+      const rightPane = document.getElementById("rightPane");
+      const videoFrame = document.getElementById("videoFrame");
+
       const engine = new BABYLON.Engine(canvas, true);
 
+      // Supprimer l'écran de chargement Babylon
       engine.loadingScreen = {
         displayLoadingUI: function () {},
         hideLoadingUI: function () {}
@@ -67,25 +73,36 @@
       camera.attachControl(canvas, true);
 
       const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+      light.intensity = 0.9;
 
+      let glbModel;
+
+      // Chargement du modèle .glb
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
-        console.log("Modèle chargé avec succès !");
+        glbModel = scene.meshes[scene.meshes.length - 1];
+        console.log("Modèle chargé !");
       }, null, function (_, message) {
-        console.error("Erreur de chargement :", message);
+        console.error("Erreur :", message);
       });
 
-      canvas.addEventListener("click", function () {
-        const pane = document.getElementById("rightPane");
-        const frame = document.getElementById("videoFrame");
-
-        pane.style.display = "block";
-        frame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
+      // Détection du clic sur le modèle
+      canvas.addEventListener("pointerdown", function (evt) {
+        const pickResult = scene.pick(evt.clientX, evt.clientY);
+        if (pickResult.hit && glbModel && pickResult.pickedMesh && glbModel.getChildMeshes().includes(pickResult.pickedMesh)) {
+          // Ouvrir la vidéo dans le panneau droit
+          leftPane.style.width = "50%";
+          rightPane.style.width = "50%";
+          videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
+          engine.resize();
+        }
       });
 
+      // Boucle de rendu
       engine.runRenderLoop(() => {
         scene.render();
       });
 
+      // Resize navigateur
       window.addEventListener("resize", () => {
         engine.resize();
       });
