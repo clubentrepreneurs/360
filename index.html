@@ -95,6 +95,11 @@
         glbModel = scene.meshes[scene.meshes.length - 1];
       });
 
+
+      BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
+  console.log("Icône 7 chargée !");
+});
+
       canvas.addEventListener("pointerdown", function (evt) {
         const pickResult = scene.pick(evt.clientX, evt.clientY);
         if (pickResult.hit && glbModel) {
