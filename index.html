@@ -82,30 +82,13 @@
 </head>
 <body>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
-<div id="animation-container" style="width:300px; height:300px;"></div>
-<script>
-  lottie.loadAnimation({
-    container: document.getElementById('animation-container'), // conteneur HTML
-    renderer: 'svg', // ou 'canvas' selon ton besoin
-    loop: true,
-    autoplay: true,
-    path: 'data.json' // chemin vers ton fichier JSON
-  });
-</script>
-
-
-
-
-
-  
   <canvas id="renderCanvas"></canvas>
 
   <div id="label">background</div>
   <div id="label2">icone7</div>
 
   <div id="videoContainer">
-    <iframe id="videoFrame" allow="autoplay"></iframe>
+    <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
     <button id="backButton">Retour à la scène 3D</button>
   </div>
 
@@ -192,28 +175,22 @@
         });
       });
 
-      // Click sur texte background
+      // ✅ Click sur texte background
       label.addEventListener("click", function () {
-        canvas.style.display = "none";
         videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
-        engine.stopRenderLoop();
+        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-      // Click sur texte icone7
+      // ✅ Click sur texte icone7
       label2.addEventListener("click", function () {
-        canvas.style.display = "none";
         videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/Jgcb7hjdgaU?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&index=3&autoplay=1";
-        engine.stopRenderLoop();
+        videoFrame.src = "https://www.youtube.com/embed/Jgcb7hjdgaU?autoplay=1";
       });
 
-      // Bouton retour
+      // ✅ Retour
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
         videoContainer.style.display = "none";
-        canvas.style.display = "block";
-        engine.runRenderLoop(() => scene.render());
       });
 
       window.addEventListener("resize", () => engine.resize());
