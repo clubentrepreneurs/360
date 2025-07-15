@@ -18,6 +18,18 @@
       display: block;
     }
 
+    #label {
+      position: absolute;
+      color: white;
+      font-size: 32px;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      pointer-events: none;
+      z-index: 5;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+
     #videoContainer {
       display: none;
       position: absolute;
@@ -61,6 +73,8 @@
 
   <canvas id="renderCanvas"></canvas>
 
+  <div id="label">background</div>
+
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay"></iframe>
     <button id="backButton">Retour à la scène 3D</button>
@@ -72,6 +86,7 @@
   <script>
     window.addEventListener("DOMContentLoaded", function () {
       const canvas = document.getElementById("renderCanvas");
+      const label = document.getElementById("label");
       const videoContainer = document.getElementById("videoContainer");
       const videoFrame = document.getElementById("videoFrame");
       const backButton = document.getElementById("backButton");
@@ -90,39 +105,31 @@
       light.intensity = 0.9;
 
       let glbModel = null;
-      let textPlane = null;
 
-      // Chargement du modèle principal
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
 
-        // ✅ Création du texte dynamique
-        const dynamicTexture = new BABYLON.DynamicTexture("dynamic texture", {width: 512, height: 256}, scene, true);
-        dynamicTexture.hasAlpha = true;
-        dynamicTexture.drawText(
-          "background",        // Texte
-          75, 150,             // Position du texte
-          "bold 100px Arial",   // Police
-          "white",             // Couleur
-          "transparent"        // Fond
-        );
+        // ✅ Suivre le modèle à l'écran avec un label 2D
+        scene.registerAfterRender(() => {
+          if (!glbModel) return;
 
-        const textMaterial = new BABYLON.StandardMaterial("textMat", scene);
-        textMaterial.diffuseTexture = dynamicTexture;
-        textMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
-        textMaterial.backFaceCulling = false;
+          const position = glbModel.getBoundingInfo().boundingSphere.centerWorld;
+          const projected = BABYLON.Vector3.Project(
+            position,
+            BABYLON.Matrix.Identity(),
+            scene.getTransformMatrix(),
+            camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+          );
 
-        // ✅ Création du plan qui porte le texte
-        textPlane = BABYLON.MeshBuilder.CreatePlane("textPlane", {width: 2, height: 1}, scene);
-        textPlane.material = textMaterial;
-
-        // ✅ Correction : inverser l’échelle X pour éviter le texte miroir
-        textPlane.scaling.x = -1;
-
-        // ✅ Positionnement sous le modèle
-        textPlane.position = new BABYLON.Vector3(0, -1.5, 0);
-        textPlane.parent = glbModel;
-        textPlane.billboardMode = BABYLON.AbstractMesh.BILLBOARDMODE_ALL;
+          // Si visible à l’écran
+          if (projected.z >= 0 && projected.z <= 1) {
+            label.style.left = projected.x + "px";
+            label.style.top = projected.y + "px";
+            label.style.display = "block";
+          } else {
+            label.style.display = "none";
+          }
+        });
       });
 
       // Chargement de l'icône secondaire
@@ -130,7 +137,6 @@
         console.log("Icône 7 chargée !");
       });
 
-      // Interaction clic pour afficher la vidéo
       canvas.addEventListener("pointerdown", function (evt) {
         const pickResult = scene.pick(evt.clientX, evt.clientY);
         if (pickResult.hit && glbModel) {
@@ -141,7 +147,6 @@
         }
       });
 
-      // Bouton retour
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
         videoContainer.style.display = "none";
