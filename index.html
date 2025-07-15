@@ -116,10 +116,13 @@
         textPlane = BABYLON.MeshBuilder.CreatePlane("textPlane", {width: 2, height: 1}, scene);
         textPlane.material = textMaterial;
 
+        // ✅ Correction : inverser l’échelle X pour éviter le texte miroir
+        textPlane.scaling.x = -1;
+
         // ✅ Positionnement sous le modèle
         textPlane.position = new BABYLON.Vector3(0, -1.5, 0);
-        textPlane.parent = glbModel; // suit le modèle
-        textPlane.billboardMode = BABYLON.AbstractMesh.BILLBOARDMODE_ALL; // toujours face à la caméra
+        textPlane.parent = glbModel;
+        textPlane.billboardMode = BABYLON.AbstractMesh.BILLBOARDMODE_ALL;
       });
 
       // Chargement de l'icône secondaire
