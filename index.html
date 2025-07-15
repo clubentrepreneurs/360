@@ -82,6 +82,23 @@
 </head>
 <body>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+<div id="animation-container" style="width:300px; height:300px;"></div>
+<script>
+  lottie.loadAnimation({
+    container: document.getElementById('animation-container'), // conteneur HTML
+    renderer: 'svg', // ou 'canvas' selon ton besoin
+    loop: true,
+    autoplay: true,
+    path: 'data.json' // chemin vers ton fichier JSON
+  });
+</script>
+
+
+
+
+
+  
   <canvas id="renderCanvas"></canvas>
 
   <div id="label">background</div>
