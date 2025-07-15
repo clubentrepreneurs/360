@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -15,13 +13,26 @@
       background: #000;
     }
 
+    #lottieContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 100;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     #renderCanvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      display: block;
+      display: none;
       z-index: 0;
     }
 
@@ -84,22 +95,43 @@
 </head>
 <body>
 
+  <div id="lottieContainer"></div>
+
   <canvas id="renderCanvas"></canvas>
 
   <div id="label">background</div>
   <div id="label2">icone7</div>
 
   <div id="videoContainer">
-    <iframe id="videoFrame" allow="autoplay"></iframe>
+    <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
     <button id="backButton">Retour à la scène 3D</button>
   </div>
 
+  <!-- Lottie player -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
   <script>
-    window.addEventListener("DOMContentLoaded", function () {
-      const canvas = document.getElementById("renderCanvas");
+    // Lottie : charger l’animation puis lancer Babylon
+    const lottieContainer = document.getElementById("lottieContainer");
+    const canvas = document.getElementById("renderCanvas");
+
+    const animation = lottie.loadAnimation({
+      container: lottieContainer,
+      renderer: 'svg',
+      loop: false,
+      autoplay: true,
+      path: 'intro.json' // Ton fichier JSON exporté
+    });
+
+    animation.addEventListener("complete", () => {
+      lottieContainer.style.display = "none";
+      canvas.style.display = "block";
+      initBabylon(); // Appel du moteur Babylon
+    });
+
+    function initBabylon() {
       const label = document.getElementById("label");
       const label2 = document.getElementById("label2");
       const videoContainer = document.getElementById("videoContainer");
@@ -122,7 +154,6 @@
       let glbModel = null;
       let iconModel = null;
 
-      // Chargement de background.glb
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
 
@@ -133,18 +164,11 @@
 
         scene.registerAfterRender(() => {
           if (!glbModel) return;
-
-          const position = glbModel.getBoundingInfo().boundingSphere.centerWorld;
-          const projected = BABYLON.Vector3.Project(
-            position,
-            BABYLON.Matrix.Identity(),
-            scene.getTransformMatrix(),
-            camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
-          );
-
-          if (projected.z >= 0 && projected.z <= 1) {
-            label.style.left = projected.x + "px";
-            label.style.top = projected.y + "px";
+          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
+          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+          if (proj.z >= 0 && proj.z <= 1) {
+            label.style.left = proj.x + "px";
+            label.style.top = proj.y + "px";
             label.style.display = "block";
           } else {
             label.style.display = "none";
@@ -152,24 +176,16 @@
         });
       });
 
-      // Chargement de icone7.glb
       BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
         iconModel = scene.meshes[scene.meshes.length - 1];
 
         scene.registerAfterRender(() => {
           if (!iconModel) return;
-
-          const position = iconModel.getBoundingInfo().boundingSphere.centerWorld;
-          const projected = BABYLON.Vector3.Project(
-            position,
-            BABYLON.Matrix.Identity(),
-            scene.getTransformMatrix(),
-            camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
-          );
-
-          if (projected.z >= 0 && projected.z <= 1) {
-            label2.style.left = projected.x + "px";
-            label2.style.top = projected.y + "px";
+          const pos = iconModel.getBoundingInfo().boundingSphere.centerWorld;
+          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+          if (proj.z >= 0 && proj.z <= 1) {
+            label2.style.left = proj.x + "px";
+            label2.style.top = proj.y + "px";
             label2.style.display = "block";
           } else {
             label2.style.display = "none";
@@ -177,33 +193,24 @@
         });
       });
 
-      // Click sur texte background
       label.addEventListener("click", function () {
-        canvas.style.display = "none";
         videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
-        engine.stopRenderLoop();
+        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-      // Click sur texte icone7
       label2.addEventListener("click", function () {
-        canvas.style.display = "none";
         videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/Jgcb7hjdgaU?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&index=3&autoplay=1";
-        engine.stopRenderLoop();
+        videoFrame.src = "https://www.youtube.com/embed/Jgcb7hjdgaU?autoplay=1";
       });
 
-      // Bouton retour
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
         videoContainer.style.display = "none";
-        canvas.style.display = "block";
-        engine.runRenderLoop(() => scene.render());
       });
 
       window.addEventListener("resize", () => engine.resize());
       engine.runRenderLoop(() => scene.render());
-    });
+    }
   </script>
 </body>
 </html>
