@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Réussite Étudiante - Babylon.js</title>
   <style>
     html, body {
@@ -13,9 +14,13 @@
     }
 
     #renderCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       display: block;
+      z-index: 0;
     }
 
     #label, #label2 {
@@ -37,10 +42,11 @@
 
     #videoContainer {
       display: none;
-      position: absolute;
+      position: fixed;
       top: 50%;
       left: 50%;
-      width: 50%;
+      width: 90%;
+      max-width: 720px;
       height: 50%;
       transform: translate(-50%, -50%);
       background: #000;
@@ -164,7 +170,7 @@
         });
       });
 
-      // ✅ Lancer vidéo 1 sur clic "background"
+      // Vidéo pour background.glb
       label.addEventListener("click", function () {
         canvas.style.display = "none";
         videoContainer.style.display = "flex";
@@ -172,7 +178,7 @@
         engine.stopRenderLoop();
       });
 
-      // ✅ Lancer vidéo 2 sur clic "icone7"
+      // Vidéo pour icone7.glb
       label2.addEventListener("click", function () {
         canvas.style.display = "none";
         videoContainer.style.display = "flex";
@@ -180,7 +186,7 @@
         engine.stopRenderLoop();
       });
 
-      // Retour à la scène
+      // Bouton retour
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
         videoContainer.style.display = "none";
