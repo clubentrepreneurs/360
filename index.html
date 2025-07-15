@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -82,6 +83,8 @@
 </head>
 <body>
 
+
+  
   <canvas id="renderCanvas"></canvas>
 
   <div id="label">background</div>
@@ -124,6 +127,7 @@
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
 
+        // ✅ Correction mobile : forcer affichage immédiat
         engine.resize();
         camera.rebuildAnglesAndRadius();
         camera.alpha += 0.0001;
