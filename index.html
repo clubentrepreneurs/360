@@ -18,7 +18,7 @@
       display: block;
     }
 
-    #label {
+    #label, #label2 {
       position: absolute;
       color: white;
       font-size: 32px;
@@ -29,6 +29,10 @@
       transform: translate(-50%, -50%);
       display: none;
       cursor: pointer;
+    }
+
+    #label2 {
+      color: #00ffff;
     }
 
     #videoContainer {
@@ -75,6 +79,7 @@
   <canvas id="renderCanvas"></canvas>
 
   <div id="label">background</div>
+  <div id="label2">icone7</div>
 
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay"></iframe>
@@ -88,6 +93,7 @@
     window.addEventListener("DOMContentLoaded", function () {
       const canvas = document.getElementById("renderCanvas");
       const label = document.getElementById("label");
+      const label2 = document.getElementById("label2");
       const videoContainer = document.getElementById("videoContainer");
       const videoFrame = document.getElementById("videoFrame");
       const backButton = document.getElementById("backButton");
@@ -106,12 +112,12 @@
       light.intensity = 0.9;
 
       let glbModel = null;
+      let iconModel = null;
 
-      // Chargement du modèle principal
-      BABYLON.SceneLoader.Append("", "home.glb", scene, function () {
+      // Chargement du modèle background.glb
+      BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
 
-        // ✅ Suivre le modèle à l'écran avec un label 2D
         scene.registerAfterRender(() => {
           if (!glbModel) return;
 
@@ -123,7 +129,6 @@
             camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
           );
 
-          // Si visible à l’écran
           if (projected.z >= 0 && projected.z <= 1) {
             label.style.left = projected.x + "px";
             label.style.top = projected.y + "px";
@@ -134,11 +139,44 @@
         });
       });
 
-      // ✅ Label clickable pour lancer la vidéo
+      // Chargement du modèle icone7.glb
+      BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
+        iconModel = scene.meshes[scene.meshes.length - 1];
+
+        scene.registerAfterRender(() => {
+          if (!iconModel) return;
+
+          const position = iconModel.getBoundingInfo().boundingSphere.centerWorld;
+          const projected = BABYLON.Vector3.Project(
+            position,
+            BABYLON.Matrix.Identity(),
+            scene.getTransformMatrix(),
+            camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+          );
+
+          if (projected.z >= 0 && projected.z <= 1) {
+            label2.style.left = projected.x + "px";
+            label2.style.top = projected.y + "px";
+            label2.style.display = "block";
+          } else {
+            label2.style.display = "none";
+          }
+        });
+      });
+
+      // ✅ Lancer vidéo 1 sur clic "background"
       label.addEventListener("click", function () {
         canvas.style.display = "none";
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
+        engine.stopRenderLoop();
+      });
+
+      // ✅ Lancer vidéo 2 sur clic "icone7"
+      label2.addEventListener("click", function () {
+        canvas.style.display = "none";
+        videoContainer.style.display = "flex";
+        videoFrame.src = "https://www.youtube.com/embed/Jgcb7hjdgaU?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&index=3&autoplay=1";
         engine.stopRenderLoop();
       });
 
@@ -148,11 +186,6 @@
         videoContainer.style.display = "none";
         canvas.style.display = "block";
         engine.runRenderLoop(() => scene.render());
-      });
-
-      // Chargement de l'icône secondaire
-      BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
-        console.log("Icône 7 chargée !");
       });
 
       window.addEventListener("resize", () => engine.resize());
