@@ -120,9 +120,15 @@
       let glbModel = null;
       let iconModel = null;
 
-      // Chargement du modèle background.glb
+      // Chargement de background.glb
       BABYLON.SceneLoader.Append("", "home.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
+
+        // ✅ Correction mobile : forcer affichage immédiat
+        engine.resize();
+        camera.rebuildAnglesAndRadius();
+        camera.alpha += 0.0001;
+        scene.render();
 
         scene.registerAfterRender(() => {
           if (!glbModel) return;
@@ -145,7 +151,7 @@
         });
       });
 
-      // Chargement du modèle icone7.glb
+      // Chargement de icone7.glb
       BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
         iconModel = scene.meshes[scene.meshes.length - 1];
 
@@ -170,7 +176,7 @@
         });
       });
 
-      // Vidéo pour background.glb
+      // Click sur texte background
       label.addEventListener("click", function () {
         canvas.style.display = "none";
         videoContainer.style.display = "flex";
@@ -178,7 +184,7 @@
         engine.stopRenderLoop();
       });
 
-      // Vidéo pour icone7.glb
+      // Click sur texte icone7
       label2.addEventListener("click", function () {
         canvas.style.display = "none";
         videoContainer.style.display = "flex";
