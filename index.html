@@ -102,7 +102,7 @@
         dynamicTexture.drawText(
           "background",        // Texte
           75, 150,             // Position du texte
-          "bold 100px Arial",   // Police
+          "bold 60px Arial",   // Police
           "white",             // Couleur
           "transparent"        // Fond
         );
@@ -116,13 +116,13 @@
         textPlane = BABYLON.MeshBuilder.CreatePlane("textPlane", {width: 2, height: 1}, scene);
         textPlane.material = textMaterial;
 
-        // ✅ Correction : inverser l’échelle X pour éviter le texte miroir
-        textPlane.scaling.x = -1;
-
         // ✅ Positionnement sous le modèle
         textPlane.position = new BABYLON.Vector3(0, -1.5, 0);
         textPlane.parent = glbModel;
         textPlane.billboardMode = BABYLON.AbstractMesh.BILLBOARDMODE_ALL;
+
+        // ✅ Correction ici : retourner verticalement (axe Y)
+        textPlane.rotation.y = Math.PI; // 180 degrés pour le remettre à l'endroit
       });
 
       // Chargement de l'icône secondaire
