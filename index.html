@@ -19,7 +19,7 @@
     }
 
     #videoContainer {
-      display: none; /* ✅ Masqué au démarrage */
+      display: none;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -90,16 +90,44 @@
       light.intensity = 0.9;
 
       let glbModel = null;
+      let textPlane = null;
 
+      // Chargement du modèle principal
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
+
+        // ✅ Création du texte dynamique
+        const dynamicTexture = new BABYLON.DynamicTexture("dynamic texture", {width: 512, height: 256}, scene, true);
+        dynamicTexture.hasAlpha = true;
+        dynamicTexture.drawText(
+          "background",        // Texte
+          75, 150,             // Position du texte
+          "bold 60px Arial",   // Police
+          "white",             // Couleur
+          "transparent"        // Fond
+        );
+
+        const textMaterial = new BABYLON.StandardMaterial("textMat", scene);
+        textMaterial.diffuseTexture = dynamicTexture;
+        textMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
+        textMaterial.backFaceCulling = false;
+
+        // ✅ Création du plan qui porte le texte
+        textPlane = BABYLON.MeshBuilder.CreatePlane("textPlane", {width: 2, height: 1}, scene);
+        textPlane.material = textMaterial;
+
+        // ✅ Positionnement sous le modèle
+        textPlane.position = new BABYLON.Vector3(0, -1.5, 0);
+        textPlane.parent = glbModel; // suit le modèle
+        textPlane.billboardMode = BABYLON.AbstractMesh.BILLBOARDMODE_ALL; // toujours face à la caméra
       });
 
-
+      // Chargement de l'icône secondaire
       BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
-  console.log("Icône 7 chargée !");
-});
+        console.log("Icône 7 chargée !");
+      });
 
+      // Interaction clic pour afficher la vidéo
       canvas.addEventListener("pointerdown", function (evt) {
         const pickResult = scene.pick(evt.clientX, evt.clientY);
         if (pickResult.hit && glbModel) {
@@ -110,6 +138,7 @@
         }
       });
 
+      // Bouton retour
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
         videoContainer.style.display = "none";
@@ -118,11 +147,8 @@
       });
 
       window.addEventListener("resize", () => engine.resize());
-
       engine.runRenderLoop(() => scene.render());
     });
   </script>
 </body>
 </html>
-
-
