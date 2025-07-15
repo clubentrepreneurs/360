@@ -49,8 +49,8 @@
       max-width: 720px;
       height: 25%;
       transform: translate(-50%, -50%);
-      background: #000;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      background: transparent;
+      box-shadow: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
@@ -124,7 +124,6 @@
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
 
-        // ✅ Correction mobile : forcer affichage immédiat
         engine.resize();
         camera.rebuildAnglesAndRadius();
         camera.alpha += 0.0001;
