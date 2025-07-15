@@ -112,30 +112,21 @@
         textMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1);
         textMaterial.backFaceCulling = false;
 
+        // ✅ Création du plan avec le texte
+        textPlane = BABYLON.MeshBuilder.CreatePlane("textPlane", {width: 2, height: 1}, scene);
+        textPlane.material = textMaterial;
+        textPlane.position = new BABYLON.Vector3(0, -1.5, 0);
+        textPlane.parent = glbModel;
 
-
-// ✅ Créer le plan du texte
-textPlane = BABYLON.MeshBuilder.CreatePlane("textPlane", {width: 2, height: 1}, scene);
-textPlane.material = textMaterial;
-textPlane.position = new BABYLON.Vector3(0, -1.5, 0);
-textPlane.parent = glbModel;
-
-// ❌ Ne pas utiliser billboardMode
-// textPlane.billboardMode = BABYLON.AbstractMesh.BILLBOARDMODE_ALL;
-
-// ✅ Rotation manuelle dynamique pour suivre la caméra
-scene.onBeforeRenderObservable.add(() => {
-  if (camera && textPlane) {
-    const dir = camera.position.subtract(textPlane.getAbsolutePosition());
-    textPlane.rotation.y = Math.atan2(dir.x, dir.z) + Math.PI; // inversé à 180°
-  }
-});
-
-
-
-
-
-        
+        // ❌ Pas de billboardMode — car il empêche une rotation manuelle
+        // ✅ Rotation dynamique vers la caméra corrigée
+        scene.onBeforeRenderObservable.add(() => {
+          if (camera && textPlane) {
+            const dir = camera.position.subtract(textPlane.getAbsolutePosition());
+            textPlane.rotation.y = Math.atan2(dir.x, dir.z) + Math.PI;
+          }
+        });
+      });
 
       // Chargement de l'icône secondaire
       BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
