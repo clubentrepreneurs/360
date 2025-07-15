@@ -121,7 +121,7 @@
       let iconModel = null;
 
       // Chargement du modèle background.glb
-      BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
+      BABYLON.SceneLoader.Append("", "home.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
 
         scene.registerAfterRender(() => {
