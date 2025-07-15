@@ -24,10 +24,11 @@
       font-size: 32px;
       font-family: Arial, sans-serif;
       font-weight: bold;
-      pointer-events: none;
+      pointer-events: auto;
       z-index: 5;
       transform: translate(-50%, -50%);
       display: none;
+      cursor: pointer;
     }
 
     #videoContainer {
@@ -106,6 +107,7 @@
 
       let glbModel = null;
 
+      // Chargement du modèle principal
       BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
 
@@ -132,26 +134,25 @@
         });
       });
 
-      // Chargement de l'icône secondaire
-      BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
-        console.log("Icône 7 chargée !");
+      // ✅ Label clickable pour lancer la vidéo
+      label.addEventListener("click", function () {
+        canvas.style.display = "none";
+        videoContainer.style.display = "flex";
+        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
+        engine.stopRenderLoop();
       });
 
-      canvas.addEventListener("pointerdown", function (evt) {
-        const pickResult = scene.pick(evt.clientX, evt.clientY);
-        if (pickResult.hit && glbModel) {
-          canvas.style.display = "none";
-          videoContainer.style.display = "flex";
-          videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&autoplay=1";
-          engine.stopRenderLoop();
-        }
-      });
-
+      // Retour à la scène
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
         videoContainer.style.display = "none";
         canvas.style.display = "block";
         engine.runRenderLoop(() => scene.render());
+      });
+
+      // Chargement de l'icône secondaire
+      BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
+        console.log("Icône 7 chargée !");
       });
 
       window.addEventListener("resize", () => engine.resize());
