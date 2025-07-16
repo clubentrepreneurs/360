@@ -96,7 +96,6 @@
 <body>
 
   <div id="lottieContainer"></div>
-
   <canvas id="renderCanvas"></canvas>
 
   <div id="label">background</div>
@@ -107,7 +106,7 @@
     <button id="backButton">Retour à la scène 3D</button>
   </div>
 
-  <!-- Lottie player -->
+  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
@@ -130,11 +129,17 @@
       initBabylon();
     });
 
-    function applyWireframeToGLBMeshes(scene, rootNode) {
-      rootNode.getChildMeshes().forEach(mesh => {
-        if (mesh.material) {
-          mesh.material.wireframe = true;
-          mesh.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+    function applyWireframeOverlay(meshes, scene) {
+      meshes.forEach(mesh => {
+        if (mesh instanceof BABYLON.Mesh && mesh.material) {
+          const wireMat = new BABYLON.StandardMaterial("wireMat", scene);
+          wireMat.wireframe = true;
+          wireMat.emissiveColor = new BABYLON.Color3(0, 0, 0);
+          wireMat.alpha = 1;
+
+          const wireClone = mesh.clone(mesh.name + "_wire", null);
+          wireClone.material = wireMat;
+          wireClone.parent = mesh;
         }
       });
     }
@@ -162,9 +167,9 @@
       let glbModel = null;
       let iconModel = null;
 
-      BABYLON.SceneLoader.Append("", "background.glb", scene, function (scene) {
+      BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
-        applyWireframeToGLBMeshes(scene, glbModel);
+        applyWireframeOverlay(scene.meshes, scene);
 
         engine.resize();
         camera.rebuildAnglesAndRadius();
@@ -175,45 +180,37 @@
           if (!glbModel) return;
           const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
           const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-          if (proj.z >= 0 && proj.z <= 1) {
-            label.style.left = proj.x + "px";
-            label.style.top = proj.y + "px";
-            label.style.display = "block";
-          } else {
-            label.style.display = "none";
-          }
+          label.style.display = (proj.z >= 0 && proj.z <= 1) ? "block" : "none";
+          label.style.left = proj.x + "px";
+          label.style.top = proj.y + "px";
         });
       });
 
-      BABYLON.SceneLoader.Append("", "wireframe.glb", scene, function (scene) {
+      BABYLON.SceneLoader.Append("", "wireframe.glb", scene, function () {
         iconModel = scene.meshes[scene.meshes.length - 1];
-        applyWireframeToGLBMeshes(scene, iconModel);
+        applyWireframeOverlay(scene.meshes, scene);
 
         scene.registerAfterRender(() => {
           if (!iconModel) return;
           const pos = iconModel.getBoundingInfo().boundingSphere.centerWorld;
           const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-          if (proj.z >= 0 && proj.z <= 1) {
-            label2.style.left = proj.x + "px";
-            label2.style.top = proj.y + "px";
-            label2.style.display = "block";
-          } else {
-            label2.style.display = "none";
-          }
+          label2.style.display = (proj.z >= 0 && proj.z <= 1) ? "block" : "none";
+          label2.style.left = proj.x + "px";
+          label2.style.top = proj.y + "px";
         });
       });
 
-      label.addEventListener("click", function () {
+      label.addEventListener("click", () => {
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-      label2.addEventListener("click", function () {
+      label2.addEventListener("click", () => {
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/Jgcb7hjdgaU?autoplay=1";
       });
 
-      backButton.addEventListener("click", function () {
+      backButton.addEventListener("click", () => {
         videoFrame.src = "";
         videoContainer.style.display = "none";
       });
