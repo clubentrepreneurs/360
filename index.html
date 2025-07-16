@@ -110,6 +110,37 @@
     #backButton:hover {
       background: #e0e0e0;
     }
+
+    /* Menu déroulant */
+    .dropdown {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      font-family: Arial, sans-serif;
+    }
+
+    .dropdown select {
+      padding: 8px 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: white;
+      color: #000;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    .dropdown select:focus {
+      outline: none;
+    }
+
+    @media (max-width: 600px) {
+      .dropdown select {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -117,17 +148,29 @@
   <div id="lottieContainer"></div>
   <canvas id="renderCanvas"></canvas>
 
-  <!-- Text labels -->
+  <!-- Labels 3D -->
   <div id="label" class="label">Socle Étoile</div>
   <div id="label2" class="label">Agenda</div>
   <div id="label3" class="label">Ordinateur</div>
   <div id="label4" class="label">Coffre</div>
   <div id="label5" class="label">Livres</div>
 
-  <!-- Video player -->
+  <!-- Video Player -->
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
     <button id="backButton">Retour à la scène 3D</button>
+  </div>
+
+  <!-- Menu déroulant -->
+  <div class="dropdown">
+    <select id="menuSelect">
+      <option selected disabled>Choisir une vidéo</option>
+      <option value="label">Socle Étoile</option>
+      <option value="label2">Agenda</option>
+      <option value="label3">Ordinateur</option>
+      <option value="label4">Coffre</option>
+      <option value="label5">Livres</option>
+    </select>
   </div>
 
   <!-- Scripts -->
@@ -220,15 +263,15 @@
       const videoContainer = document.getElementById("videoContainer");
       const videoFrame = document.getElementById("videoFrame");
 
-      const labelLinks = {
+      const videoLinks = {
         label: "https://www.youtube.com/embed/Jgcb7hjdgaU?autoplay=1",
         label2: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
         label3: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
         label4: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
-        label5: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+        label5: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1"
       };
 
-      for (const [labelId, url] of Object.entries(labelLinks)) {
+      for (const [labelId, url] of Object.entries(videoLinks)) {
         document.getElementById(labelId).addEventListener("click", () => {
           videoFrame.src = url;
           videoContainer.style.display = "flex";
@@ -238,6 +281,15 @@
       document.getElementById("backButton").addEventListener("click", () => {
         videoFrame.src = "";
         videoContainer.style.display = "none";
+      });
+
+      // Menu déroulant
+      document.getElementById("menuSelect").addEventListener("change", function () {
+        const selectedId = this.value;
+        if (videoLinks[selectedId]) {
+          videoFrame.src = videoLinks[selectedId];
+          videoContainer.style.display = "flex";
+        }
       });
 
       window.addEventListener("resize", () => engine.resize());
