@@ -254,10 +254,7 @@
       const engine = new BABYLON.Engine(canvas, true);
       const scene = new BABYLON.Scene(engine);
       // scene.clearColor = BABYLON.Color3.FromHexString("#00AFD7"); //
-
-
       scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
-
 // Charger le fond HDR
 scene.environmentTexture = new BABYLON.HDRCubeTexture("textures/hdr.hdr", scene, 512);
 scene.createDefaultSkybox(scene.environmentTexture, true, 1000, 0.3);
