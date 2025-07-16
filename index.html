@@ -73,22 +73,25 @@
       position: fixed;
       top: 50%;
       left: 50%;
-      width: 45%;
-      max-width: 720px;
-      height: 25%;
+      width: 80%;
+      max-width: 800px;
+      height: 45%;
       transform: translate(-50%, -50%);
-      background: transparent;
-      box-shadow: none;
+      background: rgba(0, 0, 0, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 10;
+      z-index: 20;
     }
 
     #videoContainer iframe {
       width: 100%;
       height: calc(100% - 40px);
       border: none;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
     }
 
     #backButton {
@@ -100,7 +103,8 @@
       font-size: 14px;
       border: none;
       cursor: pointer;
-      text-align: center;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
     }
 
     #backButton:hover {
@@ -153,6 +157,8 @@
       const engine = new BABYLON.Engine(canvas, true);
       const scene = new BABYLON.Scene(engine);
 
+      scene.clearColor = BABYLON.Color3.FromHexString("#00AFD7");
+
       const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene);
       camera.attachControl(canvas, true);
 
@@ -183,7 +189,6 @@
         });
       }
 
-      // Charger tous les modèles
       loadModelWithLabel("socleetoiletoque.glb", "label");
       loadModelWithLabel("agenda.glb", "label2");
       loadModelWithLabel("computer.glb", "label3");
@@ -216,7 +221,7 @@
       const videoFrame = document.getElementById("videoFrame");
 
       const labelLinks = {
-        label: "https://www.youtube.com/watch?v=Jgcb7hjdgaU&list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&index=3",
+        label: "https://www.youtube.com/embed/Jgcb7hjdgaU?autoplay=1",
         label2: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
         label3: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
         label4: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
@@ -225,8 +230,8 @@
 
       for (const [labelId, url] of Object.entries(labelLinks)) {
         document.getElementById(labelId).addEventListener("click", () => {
-          videoContainer.style.display = "flex";
           videoFrame.src = url;
+          videoContainer.style.display = "flex";
         });
       }
 
