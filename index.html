@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,6 +14,15 @@
       background: #00AFD7;
     }
 
+    #renderCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      z-index: 0;
+    }
+
     #lottieContainer {
       position: fixed;
       top: 0; left: 0;
@@ -25,18 +35,279 @@
       justify-content: center;
     }
 
-    #renderCanvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      z-index: 0;
-    }
-
     .label {
       position: absolute;
       padding: 8px 14px;
-      color: white;
       font-size: 24px;
-      font-fa
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: bold;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(6px);
+      border-radius: 12px;
+      pointer-events: auto;
+      color: #fff;
+      text-shadow: 1px 1px 2px #000;
+      cursor: pointer;
+      z-index: 5;
+      transform: translate(-50%, -50%);
+      display: none;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .label.show {
+      display: block;
+      opacity: 1;
+    }
+
+    #label2 { color: #00ffff; }
+    #label3 { color: #ffcc00; }
+    #label4 { color: #ff6666; }
+    #label5 { color: #aaffaa; }
+
+    #videoContainer {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 80%;
+      max-width: 800px;
+      height: 45%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    #videoContainer iframe {
+      width: 100%;
+      height: calc(100% - 40px);
+      border: none;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+
+    #backButton {
+      width: 100%;
+      height: 40px;
+      background: #ffffff;
+      color: #000000;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+
+    #backButton:hover {
+      background: #e0e0e0;
+    }
+
+    /* 🎬 Trendy Menu */
+    .dropdown {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 15;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 10px 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .dropdown:hover {
+      transform: scale(1.03);
+    }
+
+    .dropdown label {
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .dropdown select {
+      background: rgba(255, 255, 255, 0.8);
+      border: none;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #333;
+      font-family: 'Segoe UI', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown select:hover {
+      background: #f0f0f0;
+    }
+
+    @media (max-width: 600px) {
+      .dropdown {
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;
+      }
+
+      .dropdown label {
+        display: none;
+      }
+
+      .dropdown select {
+        font-size: 14px;
+        padding: 5px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="lottieContainer"></div>
+  <canvas id="renderCanvas"></canvas>
+
+  <!-- Labels -->
+  <div id="label" class="label">Socle Étoile</div>
+  <div id="label2" class="label">Agenda</div>
+  <div id="label3" class="label">Ordinateur</div>
+  <div id="label4" class="label">Coffre</div>
+  <div id="label5" class="label">Livres</div>
+
+  <!-- Video Player -->
+  <div id="videoContainer">
+    <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
+    <button id="backButton">Retour à la scène 3D</button>
+  </div>
+
+  <!-- 🌟 Trendy Dropdown Menu -->
+  <div class="dropdown">
+    <label for="menuSelect">🎬 Vidéos :</label>
+    <select id="menuSelect">
+      <option selected disabled>Choisir...</option>
+      <option value="label">Socle Étoile</option>
+      <option value="label2">Agenda</option>
+      <option value="label3">Ordinateur</option>
+      <option value="label4">Coffre</option>
+      <option value="label5">Livres</option>
+    </select>
+  </div>
+
+  <!-- Babylon & Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
+
+  <script>
+    const lottieContainer = document.getElementById("lottieContainer");
+    const canvas = document.getElementById("renderCanvas");
+
+    const animation = lottie.loadAnimation({
+      container: lottieContainer,
+      renderer: 'svg',
+      loop: false,
+      autoplay: true,
+      path: 'intro.json'
+    });
+
+    animation.addEventListener("complete", () => {
+      lottieContainer.style.display = "none";
+      canvas.style.display = "block";
+      initBabylon();
+    });
+
+    function initBabylon() {
+      const engine = new BABYLON.Engine(canvas, true);
+      const scene = new BABYLON.Scene(engine);
+      scene.clearColor = BABYLON.Color3.FromHexString("#00AFD7");
+
+      const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene);
+      camera.attachControl(canvas, true);
+
+      const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+      light.intensity = 0.9;
+
+      const modelsWithLabels = [];
+
+      function loadModelWithLabel(filename, labelId, meshName = null) {
+        const label = document.getElementById(labelId);
+        BABYLON.SceneLoader.ImportMesh("", "", filename, scene, function (meshes) {
+          let targetMesh = meshName ? meshes.find(m => m.name === meshName) : meshes.reduce((a, b) => {
+            return a.getBoundingInfo().boundingBox.extendSizeWorld.length() >
+                   b.getBoundingInfo().boundingBox.extendSizeWorld.length() ? a : b;
+          });
+          modelsWithLabels.push({ mesh: targetMesh, label: label });
+        });
+      }
+
+      loadModelWithLabel("socleetoiletoque.glb", "label");
+      loadModelWithLabel("agenda.glb", "label2");
+      loadModelWithLabel("computer.glb", "label3");
+      loadModelWithLabel("coffre.glb", "label4");
+      loadModelWithLabel("livres.glb", "label5");
+
+      scene.registerAfterRender(() => {
+        for (const { mesh, label } of modelsWithLabels) {
+          if (!mesh) continue;
+          const proj = BABYLON.Vector3.Project(
+            mesh.getBoundingInfo().boundingSphere.centerWorld,
+            BABYLON.Matrix.Identity(),
+            scene.getTransformMatrix(),
+            camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+          );
+          if (proj.z >= 0 && proj.z <= 1) {
+            label.style.left = `${proj.x}px`;
+            label.style.top = `${proj.y}px`;
+            label.classList.add("show");
+          } else {
+            label.classList.remove("show");
+          }
+        }
+      });
+
+      const videoContainer = document.getElementById("videoContainer");
+      const videoFrame = document.getElementById("videoFrame");
+
+      const videoLinks = {
+        label: "https://www.youtube.com/embed/Jgcb7hjdgaU?autoplay=1",
+        label2: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+        label3: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+        label4: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+        label5: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1"
+      };
+
+      Object.entries(videoLinks).forEach(([id, url]) => {
+        document.getElementById(id).addEventListener("click", () => {
+          videoFrame.src = url;
+          videoContainer.style.display = "flex";
+        });
+      });
+
+      document.getElementById("menuSelect").addEventListener("change", function () {
+        const selectedId = this.value;
+        if (videoLinks[selectedId]) {
+          videoFrame.src = videoLinks[selectedId];
+          videoContainer.style.display = "flex";
+        }
+      });
+
+      document.getElementById("backButton").addEventListener("click", () => {
+        videoFrame.src = "";
+        videoContainer.style.display = "none";
+      });
+
+      window.addEventListener("resize", () => engine.resize());
+      engine.runRenderLoop(() => scene.render());
+    }
+  </script>
+</body>
+</html>
