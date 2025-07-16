@@ -22,7 +22,7 @@
       width: 100vw;
       height: 100vh;
       z-index: 100;
-      background: black;
+      background: #00AFD7;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -101,8 +101,11 @@
 
   <canvas id="renderCanvas"></canvas>
 
-  <div id="label">background</div>
-  <div id="label2">icone7</div>
+  <div id="label">socleetoiletoque</div>
+  <div id="label2">agenda</div>
+  <div id="label3">computer</div>
+  <div id="label4">coffre</div>
+  <div id="label5">livres</div>
 
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
@@ -156,7 +159,11 @@
       let glbModel = null;
       let iconModel = null;
 
-      BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
+
+
+      
+
+      BABYLON.SceneLoader.Append("", "socleetoiletoque.glb", scene, function () {
         glbModel = scene.meshes[scene.meshes.length - 1];
 
         engine.resize();
@@ -178,14 +185,155 @@
         });
       });
 
-    
+
+
+
+       BABYLON.SceneLoader.Append("", "agenda.glb", scene, function () {
+        glbModel = scene.meshes[scene.meshes.length - 1];
+
+        engine.resize();
+        camera.rebuildAnglesAndRadius();
+        camera.alpha += 0.0001;
+        scene.render();
+
+        scene.registerAfterRender(() => {
+          if (!glbModel) return;
+          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
+          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+          if (proj.z >= 0 && proj.z <= 1) {
+            label.style.left = proj.x + "px";
+            label.style.top = proj.y + "px";
+            label.style.display = "block";
+          } else {
+            label.style.display = "none";
+          }
+        });
+      });
+
+
+
+
+       BABYLON.SceneLoader.Append("", "computer.glb", scene, function () {
+        glbModel = scene.meshes[scene.meshes.length - 1];
+
+        engine.resize();
+        camera.rebuildAnglesAndRadius();
+        camera.alpha += 0.0001;
+        scene.render();
+
+        scene.registerAfterRender(() => {
+          if (!glbModel) return;
+          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
+          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+          if (proj.z >= 0 && proj.z <= 1) {
+            label.style.left = proj.x + "px";
+            label.style.top = proj.y + "px";
+            label.style.display = "block";
+          } else {
+            label.style.display = "none";
+          }
+        });
+      });
+
+
+
+
+       BABYLON.SceneLoader.Append("", "coffre.glb", scene, function () {
+        glbModel = scene.meshes[scene.meshes.length - 1];
+
+        engine.resize();
+        camera.rebuildAnglesAndRadius();
+        camera.alpha += 0.0001;
+        scene.render();
+
+        scene.registerAfterRender(() => {
+          if (!glbModel) return;
+          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
+          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+          if (proj.z >= 0 && proj.z <= 1) {
+            label.style.left = proj.x + "px";
+            label.style.top = proj.y + "px";
+            label.style.display = "block";
+          } else {
+            label.style.display = "none";
+          }
+        });
+      });
+
+
+
+
+
+       BABYLON.SceneLoader.Append("", "livres.glb", scene, function () {
+        glbModel = scene.meshes[scene.meshes.length - 1];
+
+        engine.resize();
+        camera.rebuildAnglesAndRadius();
+        camera.alpha += 0.0001;
+        scene.render();
+
+        scene.registerAfterRender(() => {
+          if (!glbModel) return;
+          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
+          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
+          if (proj.z >= 0 && proj.z <= 1) {
+            label.style.left = proj.x + "px";
+            label.style.top = proj.y + "px";
+            label.style.display = "block";
+          } else {
+            label.style.display = "none";
+          }
+        });
+      });
+
+
+
+
+
+
+
+
+
+      
 
       label.addEventListener("click", function () {
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-    
+
+
+
+
+      label2.addEventListener("click", function () {
+        videoContainer.style.display = "flex";
+        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
+      });
+
+
+
+      
+      label3.addEventListener("click", function () {
+        videoContainer.style.display = "flex";
+        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
+      });
+
+
+      
+      label4.addEventListener("click", function () {
+        videoContainer.style.display = "flex";
+        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
+      });
+
+
+
+
+      label5.addEventListener("click", function () {
+        videoContainer.style.display = "flex";
+        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
+      });
+
+      
 
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
