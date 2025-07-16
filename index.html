@@ -113,7 +113,6 @@
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
   <script>
-    // Lottie : charger l’animation puis lancer Babylon
     const lottieContainer = document.getElementById("lottieContainer");
     const canvas = document.getElementById("renderCanvas");
 
@@ -122,14 +121,23 @@
       renderer: 'svg',
       loop: false,
       autoplay: true,
-      path: 'intro.json' // Ton fichier JSON exporté
+      path: 'intro.json'
     });
 
     animation.addEventListener("complete", () => {
       lottieContainer.style.display = "none";
       canvas.style.display = "block";
-      initBabylon(); // Appel du moteur Babylon
+      initBabylon();
     });
+
+    function applyWireframeToGLBMeshes(scene, rootNode) {
+      rootNode.getChildMeshes().forEach(mesh => {
+        if (mesh.material) {
+          mesh.material.wireframe = true;
+          mesh.material.emissiveColor = new BABYLON.Color3(0, 0, 0);
+        }
+      });
+    }
 
     function initBabylon() {
       const label = document.getElementById("label");
@@ -154,8 +162,9 @@
       let glbModel = null;
       let iconModel = null;
 
-      BABYLON.SceneLoader.Append("", "background.glb", scene, function () {
+      BABYLON.SceneLoader.Append("", "background.glb", scene, function (scene) {
         glbModel = scene.meshes[scene.meshes.length - 1];
+        applyWireframeToGLBMeshes(scene, glbModel);
 
         engine.resize();
         camera.rebuildAnglesAndRadius();
@@ -176,8 +185,9 @@
         });
       });
 
-      BABYLON.SceneLoader.Append("", "wireframe.glb", scene, function () {
+      BABYLON.SceneLoader.Append("", "wireframe.glb", scene, function (scene) {
         iconModel = scene.meshes[scene.meshes.length - 1];
+        applyWireframeToGLBMeshes(scene, iconModel);
 
         scene.registerAfterRender(() => {
           if (!iconModel) return;
