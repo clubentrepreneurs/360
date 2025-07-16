@@ -13,7 +13,6 @@
       background: #00AFD7;
     }
 
-    /* Canvas */
     #renderCanvas {
       position: fixed;
       top: 0; left: 0;
@@ -23,7 +22,6 @@
       z-index: 0;
     }
 
-    /* Lottie animation */
     #lottieContainer {
       position: fixed;
       top: 0; left: 0;
@@ -36,7 +34,6 @@
       justify-content: center;
     }
 
-    /* Labels */
     .label {
       position: absolute;
       padding: 8px 14px;
@@ -68,7 +65,6 @@
     #label4 { color: #ff6666; }
     #label5 { color: #aaffaa; }
 
-    /* Video container */
     #videoContainer {
       display: none;
       position: fixed;
@@ -110,7 +106,6 @@
 
     #backButton:hover { background: #e0e0e0; }
 
-    /* Hamburger menu */
     .menu-toggle {
       position: fixed;
       top: 20px;
@@ -119,14 +114,14 @@
       cursor: pointer;
       width: 30px;
       height: 25px;
-      display: flex;
+      display: none; /* caché au début */
       flex-direction: column;
       justify-content: space-between;
     }
 
     .menu-toggle span {
       height: 4px;
-      background: white;
+      background: white !important;
       border-radius: 2px;
       transition: 0.3s;
     }
@@ -182,7 +177,7 @@
 </head>
 <body>
 
-  <!-- Lottie Animation -->
+  <!-- Lottie Intro -->
   <div id="lottieContainer"></div>
 
   <!-- Babylon Canvas -->
@@ -195,18 +190,18 @@
   <div id="label4" class="label">Coffre</div>
   <div id="label5" class="label">Livres</div>
 
-  <!-- Video Modal -->
+  <!-- Video -->
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
     <button id="backButton">Retour à la scène 3D</button>
   </div>
 
-  <!-- Hamburger Toggle -->
+  <!-- Hamburger -->
   <div class="menu-toggle" id="menuToggle">
     <span></span><span></span><span></span>
   </div>
 
-  <!-- Hamburger Menu -->
+  <!-- Menu -->
   <nav class="menu" id="menu">
     <a href="#" data-video="label">Socle Étoile</a>
     <a href="#" data-video="label2">Agenda</a>
@@ -223,6 +218,7 @@
   <script>
     const lottieContainer = document.getElementById("lottieContainer");
     const canvas = document.getElementById("renderCanvas");
+    const menuToggle = document.getElementById("menuToggle");
 
     const animation = lottie.loadAnimation({
       container: lottieContainer,
@@ -235,6 +231,7 @@
     animation.addEventListener("complete", () => {
       lottieContainer.style.display = "none";
       canvas.style.display = "block";
+      menuToggle.style.display = "flex";
       initBabylon();
     });
 
@@ -243,7 +240,12 @@
       const scene = new BABYLON.Scene(engine);
       scene.clearColor = BABYLON.Color3.FromHexString("#00AFD7");
 
-      const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene);
+      // Caméra responsive
+      const isMobile = window.innerWidth < 768;
+      const camera = new BABYLON.ArcRotateCamera("camera",
+        isMobile ? Math.PI / 2 : Math.PI / 2,
+        isMobile ? Math.PI / 2.2 : Math.PI / 2.5,
+        4, BABYLON.Vector3.Zero(), scene);
       camera.attachControl(canvas, true);
 
       const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
@@ -253,15 +255,14 @@
 
       function loadModelWithLabel(filename, labelId, meshName = null) {
         const label = document.getElementById(labelId);
-
         BABYLON.SceneLoader.ImportMesh("", "", filename, scene, function (meshes) {
           let targetMesh = meshName
             ? meshes.find(m => m.name === meshName)
             : meshes.reduce((largest, current) => {
-                const sizeCurrent = current.getBoundingInfo().boundingBox.extendSizeWorld.length();
-                const sizeLargest = largest.getBoundingInfo().boundingBox.extendSizeWorld.length();
-                return sizeCurrent > sizeLargest ? current : largest;
-              }, meshes[0]);
+              const sizeCurrent = current.getBoundingInfo().boundingBox.extendSizeWorld.length();
+              const sizeLargest = largest.getBoundingInfo().boundingBox.extendSizeWorld.length();
+              return sizeCurrent > sizeLargest ? current : largest;
+            }, meshes[0]);
 
           modelsWithLabels.push({ mesh: targetMesh, label });
         });
@@ -276,7 +277,6 @@
       scene.registerAfterRender(() => {
         for (const { mesh, label } of modelsWithLabels) {
           if (!mesh) continue;
-
           const center = mesh.getBoundingInfo().boundingSphere.centerWorld;
           const proj = BABYLON.Vector3.Project(
             center,
@@ -284,7 +284,6 @@
             scene.getTransformMatrix(),
             camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
           );
-
           if (proj.z >= 0 && proj.z <= 1) {
             label.style.left = `${proj.x}px`;
             label.style.top = `${proj.y}px`;
@@ -303,7 +302,7 @@
         label2: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
         label3: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
         label4: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
-        label5: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+        label5: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1"
       };
 
       for (const [labelId, url] of Object.entries(labelLinks)) {
@@ -318,11 +317,10 @@
         videoContainer.style.display = "none";
       });
 
-      // Hamburger logic
-      const toggle = document.getElementById("menuToggle");
+      // Hamburger
       const menu = document.getElementById("menu");
-      toggle.addEventListener("click", () => {
-        toggle.classList.toggle("open");
+      menuToggle.addEventListener("click", () => {
+        menuToggle.classList.toggle("open");
         menu.classList.toggle("open");
       });
 
@@ -334,7 +332,7 @@
           videoFrame.src = videoURL;
           videoContainer.style.display = "flex";
           menu.classList.remove("open");
-          toggle.classList.remove("open");
+          menuToggle.classList.remove("open");
         });
       });
 
