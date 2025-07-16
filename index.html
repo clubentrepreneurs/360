@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Réussite Étudiante - Babylon.js</title>
   <style>
     html, body {
@@ -39,7 +39,7 @@
     .label {
       position: absolute;
       color: white;
-      font-size: 32px;
+      font-size: 28px;
       font-family: Arial, sans-serif;
       font-weight: bold;
       pointer-events: auto;
@@ -47,9 +47,13 @@
       transform: translate(-50%, -50%);
       display: none;
       cursor: pointer;
+      text-shadow: 1px 1px 3px black;
     }
 
     #label2 { color: #00ffff; }
+    #label3 { color: #ffcc00; }
+    #label4 { color: #ff6666; }
+    #label5 { color: #aaffaa; }
 
     #videoContainer {
       display: none;
@@ -96,20 +100,18 @@
   <div id="lottieContainer"></div>
   <canvas id="renderCanvas"></canvas>
 
-  <!-- Labels Overlay -->
-  <div id="label" class="label">socleetoiletoque</div>
-  <div id="label2" class="label">agenda</div>
-  <div id="label3" class="label">ordinateur</div>
-  <div id="label4" class="label">coffre</div>
-  <div id="label5" class="label">livres</div>
+  <div id="label" class="label">Socle Étoile</div>
+  <div id="label2" class="label">Agenda</div>
+  <div id="label3" class="label">Ordinateur</div>
+  <div id="label4" class="label">Coffre</div>
+  <div id="label5" class="label">Livres</div>
 
-  <!-- Video Container -->
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
     <button id="backButton">Retour à la scène 3D</button>
   </div>
 
-  <!-- Scripts -->
+  <!-- Lottie & Babylon.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
@@ -134,81 +136,84 @@
 
     function initBabylon() {
       const engine = new BABYLON.Engine(canvas, true);
-      engine.loadingScreen = {
-        displayLoadingUI: function () {},
-        hideLoadingUI: function () {}
-      };
-
       const scene = new BABYLON.Scene(engine);
+
       const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene);
       camera.attachControl(canvas, true);
 
       const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
       light.intensity = 0.9;
 
-      // Fonction de chargement avec overlay
-      function loadModelWithLabel(filename, labelId) {
+      const modelsWithLabels = [];
+
+      function loadModelWithLabel(filename, labelId, meshName = null) {
         const label = document.getElementById(labelId);
 
-        BABYLON.SceneLoader.Append("", filename, scene, function () {
-          const model = scene.meshes[scene.meshes.length - 1];
+        BABYLON.SceneLoader.ImportMesh("", "", filename, scene, function (meshes) {
+          let targetMesh;
 
-          scene.registerAfterRender(() => {
-            if (!model) return;
-            const pos = model.getBoundingInfo().boundingSphere.centerWorld;
-            const proj = BABYLON.Vector3.Project(
-              pos,
-              BABYLON.Matrix.Identity(),
-              scene.getTransformMatrix(),
-              camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
-            );
+          if (meshName) {
+            targetMesh = meshes.find(m => m.name === meshName);
+          }
 
-            if (proj.z >= 0 && proj.z <= 1) {
-              label.style.left = proj.x + "px";
-              label.style.top = proj.y + "px";
-              label.style.display = "block";
-            } else {
-              label.style.display = "none";
-            }
-          });
+          if (!targetMesh) {
+            targetMesh = meshes.reduce((largest, current) => {
+              const sizeCurrent = current.getBoundingInfo().boundingBox.extendSizeWorld.length();
+              const sizeLargest = largest.getBoundingInfo().boundingBox.extendSizeWorld.length();
+              return sizeCurrent > sizeLargest ? current : largest;
+            }, meshes[0]);
+          }
+
+          modelsWithLabels.push({ mesh: targetMesh, label: label });
         });
       }
 
-      // Charger chaque modèle avec son label
+      // Charger tous les modèles
       loadModelWithLabel("socleetoiletoque.glb", "label");
       loadModelWithLabel("agenda.glb", "label2");
       loadModelWithLabel("computer.glb", "label3");
       loadModelWithLabel("coffre.glb", "label4");
       loadModelWithLabel("livres.glb", "label5");
 
-      // Gérer les clics
+      scene.registerAfterRender(() => {
+        for (const { mesh, label } of modelsWithLabels) {
+          if (!mesh) continue;
+
+          const center = mesh.getBoundingInfo().boundingSphere.centerWorld;
+          const proj = BABYLON.Vector3.Project(
+            center,
+            BABYLON.Matrix.Identity(),
+            scene.getTransformMatrix(),
+            camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+          );
+
+          if (proj.z >= 0 && proj.z <= 1) {
+            label.style.left = `${proj.x}px`;
+            label.style.top = `${proj.y}px`;
+            label.style.display = "block";
+          } else {
+            label.style.display = "none";
+          }
+        }
+      });
+
       const videoContainer = document.getElementById("videoContainer");
       const videoFrame = document.getElementById("videoFrame");
 
-      document.getElementById("label").addEventListener("click", () => {
-        videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/watch?v=Jgcb7hjdgaU&list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&index=3";
-      });
+      const labelLinks = {
+        label: "https://www.youtube.com/watch?v=Jgcb7hjdgaU&list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&index=3",
+        label2: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+        label3: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+        label4: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+        label5: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+      };
 
-      document.getElementById("label2").addEventListener("click", () => {
-        videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
-      });
-
-      document.getElementById("label3").addEventListener("click", () => {
-        videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
-      });
-
-      document.getElementById("label4").addEventListener("click", () => {
-        videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
-      });
-
-      document.getElementById("label5").addEventListener("click", () => {
-        videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
-      });
+      for (const [labelId, url] of Object.entries(labelLinks)) {
+        document.getElementById(labelId).addEventListener("click", () => {
+          videoContainer.style.display = "flex";
+          videoFrame.src = url;
+        });
+      }
 
       document.getElementById("backButton").addEventListener("click", () => {
         videoFrame.src = "";
