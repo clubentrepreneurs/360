@@ -2,17 +2,16 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Réussite Étudiante - Babylon.js</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Expérience 3D</title>
 
-  <!-- Apex font -->
+  <!-- Police Apex (remplacée ici par une proche : Azeret Mono) -->
   <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@500&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg-color: #00AFD7;
       --text-color: #fff;
-      --accent-color: #ffffff;
       --font: 'Azeret Mono', monospace;
     }
 
@@ -29,7 +28,6 @@
       font-family: var(--font);
     }
 
-    /* Canvas Babylon */
     #renderCanvas {
       position: fixed;
       top: 0;
@@ -39,35 +37,33 @@
       z-index: 0;
     }
 
-    /* Overlays */
     .label {
       position: absolute;
       color: var(--text-color);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 500;
-      transform: translate(-50%, -50%);
       pointer-events: auto;
       z-index: 5;
       display: none;
       cursor: pointer;
-      text-shadow: 1px 1px 5px #00000066;
+      text-shadow: 1px 1px 4px #00000088;
+      transform: translate(-50%, -50%);
     }
 
-    /* Vidéo */
     #videoContainer {
       display: none;
       position: fixed;
       top: 50%;
       left: 50%;
-      width: 45%;
-      max-width: 720px;
-      height: 25%;
+      width: 50%;
+      max-width: 800px;
+      height: 30%;
       transform: translate(-50%, -50%);
-      background: transparent;
       z-index: 10;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      background: transparent;
     }
 
     #videoContainer iframe {
@@ -84,10 +80,11 @@
       font-weight: bold;
       border: none;
       cursor: pointer;
+      transition: background 0.3s ease;
     }
 
     #backButton:hover {
-      background: #e0e0e0;
+      background: #e2e2e2;
     }
 
     /* Menu hamburger */
@@ -121,28 +118,41 @@
       background: rgba(0, 0, 0, 0.95);
       color: white;
       z-index: 98;
-      padding: 60px 20px;
-      transition: right 0.4s ease;
+      padding: 60px 30px;
+      transition: right 0.5s ease-in-out;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 25px;
     }
 
     .menu-overlay.open {
       right: 0;
     }
 
-    .menu-overlay a {
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 15px;
       text-decoration: none;
       color: white;
       font-size: 18px;
-      border-bottom: 1px solid #ffffff22;
-      padding-bottom: 8px;
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease, color 0.3s ease;
     }
 
-    .menu-overlay a:hover {
-      color: #00AFD7;
+    .menu-item:hover {
+      transform: translateX(5px);
+      color: var(--bg-color);
+    }
+
+    .menu-item svg {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .menu-item:hover svg {
+      transform: scale(1.2) rotate(10deg);
+      fill: var(--bg-color);
     }
   </style>
 </head>
@@ -155,30 +165,44 @@
   <div id="label4" class="label">coffre</div>
   <div id="label5" class="label">livres</div>
 
-  <!-- Canvas -->
   <canvas id="renderCanvas"></canvas>
 
-  <!-- Video container -->
+  <!-- Vidéo -->
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
     <button id="backButton">Retour à la scène 3D</button>
   </div>
 
-  <!-- Menu button -->
+  <!-- Menu bouton -->
   <div class="menu-button" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </div>
 
   <!-- Menu overlay -->
   <div class="menu-overlay" id="menu">
-    <a href="https://www.youtube.com/watch?v=Jgcb7hjdgaU" target="_blank">Socle Étoile Toque</a>
-    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" target="_blank">Agenda</a>
-    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" target="_blank">Computer</a>
-    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" target="_blank">Coffre</a>
-    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" target="_blank">Livres</a>
+    <a href="https://www.youtube.com/watch?v=Jgcb7hjdgaU" class="menu-item" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zm0 18.18L2 15v2l10 5 10-5v-2l-10 5.18z"/></svg>
+      Socle Étoile Toque
+    </a>
+    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" class="menu-item" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M19 3H5c-1.1 0-2 .9-2 2v14l4-4h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+      Agenda
+    </a>
+    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" class="menu-item" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M4 5h16v14H4z"/></svg>
+      Computer
+    </a>
+    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" class="menu-item" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M20 6H4v12h16V6z"/></svg>
+      Coffre
+    </a>
+    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" class="menu-item" target="_blank">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M18 2H6c-1.1 0-2 .9-2 2v16l4-4h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      Livres
+    </a>
   </div>
 
-  <!-- BabylonJS -->
+  <!-- Babylon.js -->
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
@@ -190,16 +214,14 @@
 
     const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene);
     camera.attachControl(canvas, true);
-
     const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-    light.intensity = 1.1;
 
     const labels = [
-      { id: 'label1', file: 'socleetoiletoque.glb' },
-      { id: 'label2', file: 'agenda.glb' },
-      { id: 'label3', file: 'computer.glb' },
-      { id: 'label4', file: 'coffre.glb' },
-      { id: 'label5', file: 'livres.glb' }
+      { id: 'label1', file: 'socleetoiletoque.glb', offset: { x: 0, y: 0 } },
+      { id: 'label2', file: 'agenda.glb', offset: { x: 50, y: -20 } }, // Ajusté
+      { id: 'label3', file: 'computer.glb', offset: { x: -30, y: 30 } },
+      { id: 'label4', file: 'coffre.glb', offset: { x: 0, y: 0 } },
+      { id: 'label5', file: 'livres.glb', offset: { x: 0, y: 0 } }
     ];
 
     const videoLinks = {
@@ -213,24 +235,22 @@
     const videoContainer = document.getElementById("videoContainer");
     const videoFrame = document.getElementById("videoFrame");
 
-    labels.forEach(({ id, file }) => {
+    labels.forEach(({ id, file, offset }) => {
       const label = document.getElementById(id);
       BABYLON.SceneLoader.Append("", file, scene, function (scene) {
         const mesh = scene.meshes[scene.meshes.length - 1];
-
         scene.registerAfterRender(() => {
           if (!mesh) return;
           const pos = mesh.getBoundingInfo().boundingSphere.centerWorld;
           const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
           if (proj.z >= 0 && proj.z <= 1) {
-            label.style.left = proj.x + "px";
-            label.style.top = proj.y + "px";
+            label.style.left = (proj.x + offset.x) + "px";
+            label.style.top = (proj.y + offset.y) + "px";
             label.style.display = "block";
           } else {
             label.style.display = "none";
           }
         });
-
         label.addEventListener("click", () => {
           videoContainer.style.display = "flex";
           videoFrame.src = videoLinks[id];
@@ -246,7 +266,6 @@
     window.addEventListener("resize", () => engine.resize());
     engine.runRenderLoop(() => scene.render());
 
-    // Menu toggle
     function toggleMenu() {
       const menu = document.getElementById("menu");
       menu.classList.toggle("open");
