@@ -1,10 +1,8 @@
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Réussite Étudiante - Babylon.js</title>
   <style>
     html, body {
@@ -38,7 +36,7 @@
       z-index: 0;
     }
 
-    #label, #label2 {
+    .label {
       position: absolute;
       color: white;
       font-size: 32px;
@@ -51,9 +49,7 @@
       cursor: pointer;
     }
 
-    #label2 {
-      color: #00ffff;
-    }
+    #label2 { color: #00ffff; }
 
     #videoContainer {
       display: none;
@@ -98,27 +94,27 @@
 <body>
 
   <div id="lottieContainer"></div>
-
   <canvas id="renderCanvas"></canvas>
 
-  <div id="label">socleetoiletoque</div>
-  <div id="label2">agenda</div>
-  <div id="label3">computer</div>
-  <div id="label4">coffre</div>
-  <div id="label5">livres</div>
+  <!-- Labels Overlay -->
+  <div id="label" class="label">socleetoiletoque</div>
+  <div id="label2" class="label">agenda</div>
+  <div id="label3" class="label">ordinateur</div>
+  <div id="label4" class="label">coffre</div>
+  <div id="label5" class="label">livres</div>
 
+  <!-- Video Container -->
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
     <button id="backButton">Retour à la scène 3D</button>
   </div>
 
-  <!-- Lottie player -->
+  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
   <script>
-    // Lottie : charger l’animation puis lancer Babylon
     const lottieContainer = document.getElementById("lottieContainer");
     const canvas = document.getElementById("renderCanvas");
 
@@ -127,22 +123,16 @@
       renderer: 'svg',
       loop: false,
       autoplay: true,
-      path: 'intro.json' // Ton fichier JSON exporté
+      path: 'intro.json'
     });
 
     animation.addEventListener("complete", () => {
       lottieContainer.style.display = "none";
       canvas.style.display = "block";
-      initBabylon(); // Appel du moteur Babylon
+      initBabylon();
     });
 
     function initBabylon() {
-      const label = document.getElementById("label");
-      
-      const videoContainer = document.getElementById("videoContainer");
-      const videoFrame = document.getElementById("videoFrame");
-      const backButton = document.getElementById("backButton");
-
       const engine = new BABYLON.Engine(canvas, true);
       engine.loadingScreen = {
         displayLoadingUI: function () {},
@@ -156,186 +146,71 @@
       const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
       light.intensity = 0.9;
 
-      let glbModel = null;
-      let iconModel = null;
+      // Fonction de chargement avec overlay
+      function loadModelWithLabel(filename, labelId) {
+        const label = document.getElementById(labelId);
 
+        BABYLON.SceneLoader.Append("", filename, scene, function () {
+          const model = scene.meshes[scene.meshes.length - 1];
 
+          scene.registerAfterRender(() => {
+            if (!model) return;
+            const pos = model.getBoundingInfo().boundingSphere.centerWorld;
+            const proj = BABYLON.Vector3.Project(
+              pos,
+              BABYLON.Matrix.Identity(),
+              scene.getTransformMatrix(),
+              camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+            );
 
-      
-
-      BABYLON.SceneLoader.Append("", "socleetoiletoque.glb", scene, function () {
-        glbModel = scene.meshes[scene.meshes.length - 1];
-
-        engine.resize();
-        camera.rebuildAnglesAndRadius();
-        camera.alpha += 0.0001;
-        scene.render();
-
-        scene.registerAfterRender(() => {
-          if (!glbModel) return;
-          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
-          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-          if (proj.z >= 0 && proj.z <= 1) {
-            label.style.left = proj.x + "px";
-            label.style.top = proj.y + "px";
-            label.style.display = "block";
-          } else {
-            label.style.display = "none";
-          }
+            if (proj.z >= 0 && proj.z <= 1) {
+              label.style.left = proj.x + "px";
+              label.style.top = proj.y + "px";
+              label.style.display = "block";
+            } else {
+              label.style.display = "none";
+            }
+          });
         });
+      }
+
+      // Charger chaque modèle avec son label
+      loadModelWithLabel("socleetoiletoque.glb", "label");
+      loadModelWithLabel("agenda.glb", "label2");
+      loadModelWithLabel("computer.glb", "label3");
+      loadModelWithLabel("coffre.glb", "label4");
+      loadModelWithLabel("livres.glb", "label5");
+
+      // Gérer les clics
+      const videoContainer = document.getElementById("videoContainer");
+      const videoFrame = document.getElementById("videoFrame");
+
+      document.getElementById("label").addEventListener("click", () => {
+        videoContainer.style.display = "flex";
+        videoFrame.src = "https://www.youtube.com/watch?v=Jgcb7hjdgaU&list=PLV8G_tL0jD2JNU3NqxIcULusdtMWeKL5k&index=3";
       });
 
-
-
-
-       BABYLON.SceneLoader.Append("", "agenda.glb", scene, function () {
-        glbModel = scene.meshes[scene.meshes.length - 1];
-
-        engine.resize();
-        camera.rebuildAnglesAndRadius();
-        camera.alpha += 0.0001;
-        scene.render();
-
-        scene.registerAfterRender(() => {
-          if (!glbModel) return;
-          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
-          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-          if (proj.z >= 0 && proj.z <= 1) {
-            label.style.left = proj.x + "px";
-            label.style.top = proj.y + "px";
-            label.style.display = "block";
-          } else {
-            label.style.display = "none";
-          }
-        });
-      });
-
-
-
-
-       BABYLON.SceneLoader.Append("", "computer.glb", scene, function () {
-        glbModel = scene.meshes[scene.meshes.length - 1];
-
-        engine.resize();
-        camera.rebuildAnglesAndRadius();
-        camera.alpha += 0.0001;
-        scene.render();
-
-        scene.registerAfterRender(() => {
-          if (!glbModel) return;
-          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
-          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-          if (proj.z >= 0 && proj.z <= 1) {
-            label.style.left = proj.x + "px";
-            label.style.top = proj.y + "px";
-            label.style.display = "block";
-          } else {
-            label.style.display = "none";
-          }
-        });
-      });
-
-
-
-
-       BABYLON.SceneLoader.Append("", "coffre.glb", scene, function () {
-        glbModel = scene.meshes[scene.meshes.length - 1];
-
-        engine.resize();
-        camera.rebuildAnglesAndRadius();
-        camera.alpha += 0.0001;
-        scene.render();
-
-        scene.registerAfterRender(() => {
-          if (!glbModel) return;
-          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
-          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-          if (proj.z >= 0 && proj.z <= 1) {
-            label.style.left = proj.x + "px";
-            label.style.top = proj.y + "px";
-            label.style.display = "block";
-          } else {
-            label.style.display = "none";
-          }
-        });
-      });
-
-
-
-
-
-       BABYLON.SceneLoader.Append("", "livres.glb", scene, function () {
-        glbModel = scene.meshes[scene.meshes.length - 1];
-
-        engine.resize();
-        camera.rebuildAnglesAndRadius();
-        camera.alpha += 0.0001;
-        scene.render();
-
-        scene.registerAfterRender(() => {
-          if (!glbModel) return;
-          const pos = glbModel.getBoundingInfo().boundingSphere.centerWorld;
-          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-          if (proj.z >= 0 && proj.z <= 1) {
-            label.style.left = proj.x + "px";
-            label.style.top = proj.y + "px";
-            label.style.display = "block";
-          } else {
-            label.style.display = "none";
-          }
-        });
-      });
-
-
-
-
-
-
-
-
-
-      
-
-      label.addEventListener("click", function () {
+      document.getElementById("label2").addEventListener("click", () => {
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-
-
-
-
-      label2.addEventListener("click", function () {
+      document.getElementById("label3").addEventListener("click", () => {
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-
-
-      
-      label3.addEventListener("click", function () {
+      document.getElementById("label4").addEventListener("click", () => {
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-
-      
-      label4.addEventListener("click", function () {
+      document.getElementById("label5").addEventListener("click", () => {
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-
-
-
-      label5.addEventListener("click", function () {
-        videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
-      });
-
-      
-
-      backButton.addEventListener("click", function () {
+      document.getElementById("backButton").addEventListener("click", () => {
         videoFrame.src = "";
         videoContainer.style.display = "none";
       });
