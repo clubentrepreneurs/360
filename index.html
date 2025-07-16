@@ -135,7 +135,7 @@
 
     function initBabylon() {
       const label = document.getElementById("label");
-      const label2 = document.getElementById("label2");
+      
       const videoContainer = document.getElementById("videoContainer");
       const videoFrame = document.getElementById("videoFrame");
       const backButton = document.getElementById("backButton");
@@ -178,32 +178,14 @@
         });
       });
 
-      BABYLON.SceneLoader.Append("", "icone7.glb", scene, function () {
-        iconModel = scene.meshes[scene.meshes.length - 1];
-
-        scene.registerAfterRender(() => {
-          if (!iconModel) return;
-          const pos = iconModel.getBoundingInfo().boundingSphere.centerWorld;
-          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
-          if (proj.z >= 0 && proj.z <= 1) {
-            label2.style.left = proj.x + "px";
-            label2.style.top = proj.y + "px";
-            label2.style.display = "block";
-          } else {
-            label2.style.display = "none";
-          }
-        });
-      });
+    
 
       label.addEventListener("click", function () {
         videoContainer.style.display = "flex";
         videoFrame.src = "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1";
       });
 
-      label2.addEventListener("click", function () {
-        videoContainer.style.display = "flex";
-        videoFrame.src = "https://www.youtube.com/embed/Jgcb7hjdgaU?autoplay=1";
-      });
+    
 
       backButton.addEventListener("click", function () {
         videoFrame.src = "";
