@@ -2,310 +2,254 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Réussite Étudiante - Babylon.js</title>
+
+  <!-- Apex font -->
+  <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@500&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --bg-color: #00AFD7;
+      --text-color: #fff;
+      --accent-color: #ffffff;
+      --font: 'Azeret Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
-      background: #00AFD7;
+      background-color: var(--bg-color);
+      font-family: var(--font);
     }
 
+    /* Canvas Babylon */
     #renderCanvas {
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      display: none;
       z-index: 0;
     }
 
-    #lottieContainer {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 100;
-      background: #00AFD7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
+    /* Overlays */
     .label {
       position: absolute;
-      padding: 8px 14px;
+      color: var(--text-color);
       font-size: 24px;
-      font-family: 'Segoe UI', sans-serif;
-      font-weight: bold;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(6px);
-      border-radius: 12px;
-      pointer-events: auto;
-      color: #fff;
-      text-shadow: 1px 1px 2px #000;
-      cursor: pointer;
-      z-index: 5;
+      font-weight: 500;
       transform: translate(-50%, -50%);
+      pointer-events: auto;
+      z-index: 5;
       display: none;
-      opacity: 0;
-      transition: all 0.3s ease;
+      cursor: pointer;
+      text-shadow: 1px 1px 5px #00000066;
     }
 
-    .label.show {
-      display: block;
-      opacity: 1;
-    }
-
-    #label2 { color: #00ffff; }
-    #label3 { color: #ffcc00; }
-    #label4 { color: #ff6666; }
-    #label5 { color: #aaffaa; }
-
+    /* Vidéo */
     #videoContainer {
       display: none;
       position: fixed;
       top: 50%;
       left: 50%;
-      width: 80%;
-      max-width: 800px;
-      height: 45%;
+      width: 45%;
+      max-width: 720px;
+      height: 25%;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.9);
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      background: transparent;
+      z-index: 10;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 20;
     }
 
     #videoContainer iframe {
       width: 100%;
       height: calc(100% - 40px);
       border: none;
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
     }
 
     #backButton {
       width: 100%;
       height: 40px;
-      background: #ffffff;
-      color: #000000;
+      background: white;
+      color: black;
       font-weight: bold;
-      font-size: 14px;
       border: none;
       cursor: pointer;
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
     }
 
     #backButton:hover {
       background: #e0e0e0;
     }
 
-    /* 🎬 Trendy Menu */
-    .dropdown {
+    /* Menu hamburger */
+    .menu-button {
       position: fixed;
       top: 20px;
       right: 20px;
-      z-index: 15;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 16px;
-      padding: 10px 16px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease;
+      z-index: 99;
+      width: 40px;
+      height: 30px;
       display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .dropdown:hover {
-      transform: scale(1.03);
-    }
-
-    .dropdown label {
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .dropdown select {
-      background: rgba(255, 255, 255, 0.8);
-      border: none;
-      border-radius: 10px;
-      padding: 6px 12px;
-      font-size: 15px;
-      font-weight: bold;
+      flex-direction: column;
+      justify-content: space-between;
       cursor: pointer;
-      color: #333;
-      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .menu-button span {
+      background: white;
+      height: 4px;
+      border-radius: 2px;
       transition: all 0.3s ease;
     }
 
-    .dropdown select:hover {
-      background: #f0f0f0;
+    /* Menu overlay */
+    .menu-overlay {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 300px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      color: white;
+      z-index: 98;
+      padding: 60px 20px;
+      transition: right 0.4s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
-    @media (max-width: 600px) {
-      .dropdown {
-        top: 10px;
-        right: 10px;
-        padding: 8px 12px;
-      }
+    .menu-overlay.open {
+      right: 0;
+    }
 
-      .dropdown label {
-        display: none;
-      }
+    .menu-overlay a {
+      text-decoration: none;
+      color: white;
+      font-size: 18px;
+      border-bottom: 1px solid #ffffff22;
+      padding-bottom: 8px;
+      transition: all 0.3s ease;
+    }
 
-      .dropdown select {
-        font-size: 14px;
-        padding: 5px 10px;
-      }
+    .menu-overlay a:hover {
+      color: #00AFD7;
     }
   </style>
 </head>
 <body>
 
-  <div id="lottieContainer"></div>
+  <!-- Labels -->
+  <div id="label1" class="label">socleetoiletoque</div>
+  <div id="label2" class="label">agenda</div>
+  <div id="label3" class="label">computer</div>
+  <div id="label4" class="label">coffre</div>
+  <div id="label5" class="label">livres</div>
+
+  <!-- Canvas -->
   <canvas id="renderCanvas"></canvas>
 
-  <!-- Labels -->
-  <div id="label" class="label">Socle Étoile</div>
-  <div id="label2" class="label">Agenda</div>
-  <div id="label3" class="label">Ordinateur</div>
-  <div id="label4" class="label">Coffre</div>
-  <div id="label5" class="label">Livres</div>
-
-  <!-- Video Player -->
+  <!-- Video container -->
   <div id="videoContainer">
     <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
     <button id="backButton">Retour à la scène 3D</button>
   </div>
 
-  <!-- 🌟 Trendy Dropdown Menu -->
-  <div class="dropdown">
-    <label for="menuSelect">🎬 Vidéos :</label>
-    <select id="menuSelect">
-      <option selected disabled>Choisir...</option>
-      <option value="label">Socle Étoile</option>
-      <option value="label2">Agenda</option>
-      <option value="label3">Ordinateur</option>
-      <option value="label4">Coffre</option>
-      <option value="label5">Livres</option>
-    </select>
+  <!-- Menu button -->
+  <div class="menu-button" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
   </div>
 
-  <!-- Babylon & Scripts -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
+  <!-- Menu overlay -->
+  <div class="menu-overlay" id="menu">
+    <a href="https://www.youtube.com/watch?v=Jgcb7hjdgaU" target="_blank">Socle Étoile Toque</a>
+    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" target="_blank">Agenda</a>
+    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" target="_blank">Computer</a>
+    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" target="_blank">Coffre</a>
+    <a href="https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1" target="_blank">Livres</a>
+  </div>
+
+  <!-- BabylonJS -->
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
   <script>
-    const lottieContainer = document.getElementById("lottieContainer");
     const canvas = document.getElementById("renderCanvas");
+    const engine = new BABYLON.Engine(canvas, true);
+    const scene = new BABYLON.Scene(engine);
+    scene.clearColor = new BABYLON.Color3.FromHexString("#00AFD7");
 
-    const animation = lottie.loadAnimation({
-      container: lottieContainer,
-      renderer: 'svg',
-      loop: false,
-      autoplay: true,
-      path: 'intro.json'
-    });
+    const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene);
+    camera.attachControl(canvas, true);
 
-    animation.addEventListener("complete", () => {
-      lottieContainer.style.display = "none";
-      canvas.style.display = "block";
-      initBabylon();
-    });
+    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 1.1;
 
-    function initBabylon() {
-      const engine = new BABYLON.Engine(canvas, true);
-      const scene = new BABYLON.Scene(engine);
-      scene.clearColor = BABYLON.Color3.FromHexString("#00AFD7");
+    const labels = [
+      { id: 'label1', file: 'socleetoiletoque.glb' },
+      { id: 'label2', file: 'agenda.glb' },
+      { id: 'label3', file: 'computer.glb' },
+      { id: 'label4', file: 'coffre.glb' },
+      { id: 'label5', file: 'livres.glb' }
+    ];
 
-      const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 4, BABYLON.Vector3.Zero(), scene);
-      camera.attachControl(canvas, true);
+    const videoLinks = {
+      label1: "https://www.youtube.com/watch?v=Jgcb7hjdgaU",
+      label2: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+      label3: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+      label4: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
+      label5: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1"
+    };
 
-      const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-      light.intensity = 0.9;
+    const videoContainer = document.getElementById("videoContainer");
+    const videoFrame = document.getElementById("videoFrame");
 
-      const modelsWithLabels = [];
+    labels.forEach(({ id, file }) => {
+      const label = document.getElementById(id);
+      BABYLON.SceneLoader.Append("", file, scene, function (scene) {
+        const mesh = scene.meshes[scene.meshes.length - 1];
 
-      function loadModelWithLabel(filename, labelId, meshName = null) {
-        const label = document.getElementById(labelId);
-        BABYLON.SceneLoader.ImportMesh("", "", filename, scene, function (meshes) {
-          let targetMesh = meshName ? meshes.find(m => m.name === meshName) : meshes.reduce((a, b) => {
-            return a.getBoundingInfo().boundingBox.extendSizeWorld.length() >
-                   b.getBoundingInfo().boundingBox.extendSizeWorld.length() ? a : b;
-          });
-          modelsWithLabels.push({ mesh: targetMesh, label: label });
-        });
-      }
-
-      loadModelWithLabel("socleetoiletoque.glb", "label");
-      loadModelWithLabel("agenda.glb", "label2");
-      loadModelWithLabel("computer.glb", "label3");
-      loadModelWithLabel("coffre.glb", "label4");
-      loadModelWithLabel("livres.glb", "label5");
-
-      scene.registerAfterRender(() => {
-        for (const { mesh, label } of modelsWithLabels) {
-          if (!mesh) continue;
-          const proj = BABYLON.Vector3.Project(
-            mesh.getBoundingInfo().boundingSphere.centerWorld,
-            BABYLON.Matrix.Identity(),
-            scene.getTransformMatrix(),
-            camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
-          );
+        scene.registerAfterRender(() => {
+          if (!mesh) return;
+          const pos = mesh.getBoundingInfo().boundingSphere.centerWorld;
+          const proj = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
           if (proj.z >= 0 && proj.z <= 1) {
-            label.style.left = `${proj.x}px`;
-            label.style.top = `${proj.y}px`;
-            label.classList.add("show");
+            label.style.left = proj.x + "px";
+            label.style.top = proj.y + "px";
+            label.style.display = "block";
           } else {
-            label.classList.remove("show");
+            label.style.display = "none";
           }
-        }
-      });
+        });
 
-      const videoContainer = document.getElementById("videoContainer");
-      const videoFrame = document.getElementById("videoFrame");
-
-      const videoLinks = {
-        label: "https://www.youtube.com/embed/Jgcb7hjdgaU?autoplay=1",
-        label2: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
-        label3: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
-        label4: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1",
-        label5: "https://www.youtube.com/embed/lUU1G-6klpI?autoplay=1"
-      };
-
-      Object.entries(videoLinks).forEach(([id, url]) => {
-        document.getElementById(id).addEventListener("click", () => {
-          videoFrame.src = url;
+        label.addEventListener("click", () => {
           videoContainer.style.display = "flex";
+          videoFrame.src = videoLinks[id];
         });
       });
+    });
 
-      document.getElementById("menuSelect").addEventListener("change", function () {
-        const selectedId = this.value;
-        if (videoLinks[selectedId]) {
-          videoFrame.src = videoLinks[selectedId];
-          videoContainer.style.display = "flex";
-        }
-      });
+    document.getElementById("backButton").addEventListener("click", () => {
+      videoContainer.style.display = "none";
+      videoFrame.src = "";
+    });
 
-      document.getElementById("backButton").addEventListener("click", () => {
-        videoFrame.src = "";
-        videoContainer.style.display = "none";
-      });
+    window.addEventListener("resize", () => engine.resize());
+    engine.runRenderLoop(() => scene.render());
 
-      window.addEventListener("resize", () => engine.resize());
-      engine.runRenderLoop(() => scene.render());
+    // Menu toggle
+    function toggleMenu() {
+      const menu = document.getElementById("menu");
+      menu.classList.toggle("open");
     }
   </script>
 </body>
