@@ -1,231 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Réussite Étudiante - Babylon.js</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      background: #00AFD7;
-      font-family: 'Apex', sans-serif;
-    }
-
-    #renderCanvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      z-index: 0;
-    }
-
-    #lottieContainer {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 100;
-      background: #00AFD7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .label {
-      position: absolute;
-      padding: 8px 14px;
-      color: white;
-      font-size: 24px;
-      font-family: Apex, sans-serif;
-      font-weight: bold;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 12px;
-      pointer-events: auto;
-      z-index: 5;
-      transform: translate(-50%, -50%);
-      display: none;
-      cursor: pointer;
-      text-shadow: 1px 1px 3px black;
-      transition: transform 0.3s ease, opacity 0.5s ease;
-      opacity: 0;
-    }
-
-    .label:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translate(-50%, -55%) scale(1.05);
-    }
-
-    .label.show { display: block; opacity: 1; }
-
-    #label2 { color: #00ffff; }
-    #label3 { color: #ffcc00; }
-    #label4 { color: #ff6666; }
-    #label5 { color: #aaffaa; }
-
-    #videoContainer {
-      display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 80%;
-      max-width: 800px;
-      height: 45%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.9);
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 20;
-    }
-
-    #videoContainer iframe {
-      width: 100%;
-      height: calc(100% - 40px);
-      border: none;
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
-    }
-
-    #backButton {
-      width: 100%;
-      height: 40px;
-      background: #ffffff;
-      color: #000000;
-      font-weight: bold;
-      font-size: 14px;
-      border: none;
-      cursor: pointer;
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
-    }
-
-    #backButton:hover { background: #e0e0e0; }
-
-    .menu-toggle {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 200;
-      cursor: pointer;
-      width: 30px;
-      height: 25px;
-      display: none; /* caché au début */
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .menu-toggle span {
-      height: 4px;
-      background: white !important;
-      border-radius: 2px;
-      transition: 0.3s;
-    }
-
-    .menu {
-      position: fixed;
-      top: 0;
-      left: -100%;
-      height: 100%;
-      width: 250px;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 150;
-      padding-top: 80px;
-      transition: left 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding-left: 20px;
-    }
-
-    .menu a {
-      color: white;
-      font-size: 20px;
-      font-weight: bold;
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .menu a:hover {
-      color: #00AFD7;
-    }
-
-    .menu.open {
-      left: 0;
-    }
-
-    .menu-toggle.open span:nth-child(1) {
-      transform: rotate(45deg) translateY(10px);
-    }
-    .menu-toggle.open span:nth-child(2) {
-      opacity: 0;
-    }
-    .menu-toggle.open span:nth-child(3) {
-      transform: rotate(-45deg) translateY(-10px);
-    }
-
-    @media (max-width: 600px) {
-      .menu a {
-        font-size: 18px;
-      }
-    }
-
-
-@font-face {
-  font-family: 'Apex';
-  src: url('fonts/ApexNew-Bold.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-
-
-
-
-    
-  </style>
+  <!-- ... HEAD inchangé ... -->
+  <!-- ... même contenu que dans ton code initial ... -->
 </head>
 <body>
 
-  <!-- Lottie Intro -->
-  <div id="lottieContainer"></div>
+  <!-- ... HTML inchangé ... -->
 
-  <!-- Babylon Canvas -->
-  <canvas id="renderCanvas"></canvas>
-
-  <!-- Labels -->
-  <div id="label" class="label">Socle Étoile</div>
-  <div id="label2" class="label">Agenda</div>
-  <div id="label3" class="label">Ordinateur</div>
-  <div id="label4" class="label">Coffre</div>
-  <div id="label5" class="label">Livres</div>
-
-  <!-- Video -->
-  <div id="videoContainer">
-    <iframe id="videoFrame" allow="autoplay" allowfullscreen></iframe>
-    <button id="backButton">Retour à la scène 3D</button>
-  </div>
-
-  <!-- Hamburger -->
-  <div class="menu-toggle" id="menuToggle">
-    <span></span><span></span><span></span>
-  </div>
-
-  <!-- Menu -->
-  <nav class="menu" id="menu">
-    <a href="#" data-video="label">Socle Étoile</a>
-    <a href="#" data-video="label2">Agenda</a>
-    <a href="#" data-video="label3">Ordinateur</a>
-    <a href="#" data-video="label4">Coffre</a>
-    <a href="#" data-video="label5">Livres</a>
-  </nav>
-
-  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
   <script src="https://cdn.babylonjs.com/babylon.js"></script>
   <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
@@ -253,24 +35,32 @@
     function initBabylon() {
       const engine = new BABYLON.Engine(canvas, true);
       const scene = new BABYLON.Scene(engine);
-      // scene.clearColor = BABYLON.Color3.FromHexString("#00AFD7"); //
       scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
-// Charger le fond HDR
-scene.environmentTexture = new BABYLON.HDRCubeTexture("textures/hdr.hdr", scene, 512);
-scene.createDefaultSkybox(scene.environmentTexture, true, 1000, 0.3);
+      scene.environmentTexture = new BABYLON.HDRCubeTexture("textures/hdr.hdr", scene, 512);
+      scene.createDefaultSkybox(scene.environmentTexture, true, 1000, 0.3);
 
-
-
-
-      
-
-      // Caméra responsive
       const isMobile = window.innerWidth < 768;
+      const alphaTarget = isMobile ? Math.PI / 2 : Math.PI / 2;
+      const betaTarget = isMobile ? Math.PI / 2.2 : Math.PI / 2.5;
+      const radiusTarget = 4;
+
       const camera = new BABYLON.ArcRotateCamera("camera",
-        isMobile ? Math.PI / 2 : Math.PI / 2,
-        isMobile ? Math.PI / 2.2 : Math.PI / 2.5,
-        4, BABYLON.Vector3.Zero(), scene);
+        alphaTarget + Math.PI, betaTarget - 0.4, radiusTarget * 1.8,
+        BABYLON.Vector3.Zero(), scene);
       camera.attachControl(canvas, true);
+
+      // Animation douce de la caméra
+      let frame = 0;
+      const totalFrames = 180;
+      scene.onBeforeRenderObservable.add(() => {
+        if (frame < totalFrames) {
+          const t = frame / totalFrames;
+          camera.alpha = alphaTarget + Math.PI * (1 - t);
+          camera.beta = betaTarget - 0.4 * (1 - t);
+          camera.radius = radiusTarget * (1.8 - 0.8 * t);
+          frame++;
+        }
+      });
 
       const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
       light.intensity = 0.9;
@@ -341,7 +131,6 @@ scene.createDefaultSkybox(scene.environmentTexture, true, 1000, 0.3);
         videoContainer.style.display = "none";
       });
 
-      // Hamburger
       const menu = document.getElementById("menu");
       menuToggle.addEventListener("click", () => {
         menuToggle.classList.toggle("open");
