@@ -61,10 +61,9 @@
 
     .label.show { display: block; opacity: 1; }
 
-    #label2 { color: #ffffff; }
-    #label3 { color: #ffffff; }
-    #label4 { color: #ffffff; }
-    #label5 { color: #ffffff; }
+    #label2, #label3, #label4, #label5 {
+      color: #ffffff;
+    }
 
     #videoContainer {
       display: none;
@@ -244,7 +243,7 @@
       scene.createDefaultSkybox(scene.environmentTexture, true, 1000, 0.3);
 
       const isMobile = window.innerWidth < 768;
-      const alphaTarget = isMobile ? Math.PI / 2 : Math.PI / 2;
+      const alphaTarget = Math.PI / 2;
       const betaTarget = isMobile ? Math.PI / 2.2 : Math.PI / 2.5;
       const radiusTarget = 4;
 
@@ -305,7 +304,7 @@
             camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
           if (proj.z >= 0 && proj.z <= 1) {
             label.style.left = `${proj.x}px`;
-            label.style.top = `${proj.y}px`;
+            label.style.top = `${proj.y + 30}px`; // Décalage vertical vers le bas
             label.classList.add("show");
           } else {
             label.classList.remove("show");
