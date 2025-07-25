@@ -243,13 +243,12 @@
 
      //  scene.environmentTexture = new BABYLON.HDRCubeTexture("textures/plage7compatible.hdr", scene, 512); //
 
-     // scene.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/plage4.env", scene); //
-    //  scene.createDefaultSkybox(scene.environmentTexture, true, 1000, 0.3); //
+   
 
 
 
 
-scene.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/plage4.env", scene);
+scene.environmentTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("textures/citron.env", scene);
 
 // Create a sharper custom skybox instead of the helper
 const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
